@@ -1,7 +1,7 @@
 "use client";
 
 import { SHOPS, Shop } from "@/lib/constants";
-import { MapPin, Star, ChevronRight } from "lucide-react";
+import { MapPin, Star, ChevronRight, Search } from "lucide-react";
 import clsx from "clsx";
 import Link from "next/link";
 
@@ -34,7 +34,7 @@ export default function ShopSidebar({
   onSelectShop,
 }: ShopSidebarProps) {
   return (
-    <aside className="hidden md:flex flex-col w-[420px] h-full bg-white border-r border-gray-200 z-30 shadow-xl overflow-hidden transition-all duration-300">
+    <aside className="hidden md:flex flex-col w-[30%] min-w-[380px] max-w-[500px] h-full bg-white border-r border-gray-200 z-30 shadow-xl overflow-hidden transition-all duration-300">
       {/* Header & Filters */}
       <div className="p-6 border-b border-gray-100 shrink-0">
         <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -43,6 +43,20 @@ export default function ShopSidebar({
             {SHOPS.length}
           </span>
         </h2>
+
+        {/* Search Bar */}
+        <div className="relative group mb-4">
+          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+            <Search className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors" />
+          </div>
+          <input
+            type="text"
+            placeholder="이름, 지역으로 검색"
+            className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-200 transition-all"
+            readOnly
+          />
+        </div>
+
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
           <FilterChip label="전체" active />
           <FilterChip label="비브람" />

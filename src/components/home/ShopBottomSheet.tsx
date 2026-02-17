@@ -204,8 +204,12 @@ export default function ShopBottomSheet({
         ref={listRef}
         className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 py-2 bg-gray-50/50"
       >
-        <div className="space-y-3 pb-20">
-          {" "}
+        <div
+          className={clsx(
+            "space-y-3",
+            isOpen ? "pb-24" : "pb-[calc(85vh-500px+120px)]",
+          )}
+        >
           {/* Bottom padding for FAB */}
           {sortedShops.map((shop) => (
             <div

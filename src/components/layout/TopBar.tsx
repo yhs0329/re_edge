@@ -12,20 +12,8 @@ export default function TopBar() {
         </h1>
       </div>
 
-      {/* Search Input (Fake) */}
-      <div className="flex-1 max-w-md">
-        <div className="relative group">
-          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <Search className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors" />
-          </div>
-          <input
-            type="text"
-            placeholder="암벽화 수선 전문점 찾기..."
-            className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-transparent rounded-full text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-200 transition-all shadow-inner"
-            readOnly // MVP: Just UI for now
-          />
-        </div>
-      </div>
+      {/* Right placeholder (optional, can be empty) */}
+      <div className="w-10 md:hidden" />
     </header>
   );
 }
