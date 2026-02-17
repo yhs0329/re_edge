@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import clsx from "clsx";
 import { SHOPS } from "@/lib/constants";
-import Link from "next/link";
+import ShopDetailView from "@/components/shop/ShopDetailView";
 
 interface ShopBottomSheetProps {
   selectedShopId: number | null;
@@ -64,11 +64,14 @@ export default function ShopBottomSheet({
     });
   }, [selectedShopId]);
 
+  const selectedShop = SHOPS.find((s) => s.id === selectedShopId);
+
   // Snap points
   const SNAP_POINTS = {
     COLLAPSED: "calc(100% - 140px)",
-    PEEK: "calc(100% - 500px)", // Increased for taller cards with images
-    EXPANDED: "3%",
+    PEEK: "calc(100% - 500px)",
+    EXPANDED: "15%",
+    FULL: "0%",
   };
 
   const toggleSheet = () => {
@@ -103,8 +106,8 @@ export default function ShopBottomSheet({
 
   useEffect(() => {
     if (selectedShopId) {
-      controls.start({ y: SNAP_POINTS.PEEK });
-      setIsOpen(false);
+      controls.start({ y: SNAP_POINTS.FULL });
+      setIsOpen(true);
       // Scroll list to top so selected card is visible
       if (listRef.current) {
         listRef.current.scrollTo({ top: 0, behavior: "smooth" });
@@ -175,144 +178,136 @@ export default function ShopBottomSheet({
       </AnimatePresence>
 
       {/* Header & Filters */}
-      <div className="px-5 pb-4 border-b border-gray-100 shrink-0 bg-white relative">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-bold text-gray-900">
-            내 주변 리솔샵 <span className="text-blue-600">{SHOPS.length}</span>
-          </h2>
-          {/* Close Button (Visible when open) */}
-          {isOpen && (
-            <button
-              onClick={toggleSheet}
-              className="p-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
-              aria-label="Close List"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          )}
-        </div>
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          <FilterChip label="전체" active />
-          <FilterChip label="비브람" />
-          <FilterChip label="택배가능" />
-          <FilterChip label="영업중" />
-        </div>
-      </div>
-
-      {/* Shop List */}
-      <div
-        ref={listRef}
-        className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 py-2 bg-gray-50/50"
-      >
-        <div
-          className={clsx(
-            "space-y-3",
-            isOpen ? "pb-24" : "pb-[calc(85vh-500px+120px)]",
-          )}
-        >
-          {/* Bottom padding for FAB */}
-          {sortedShops.map((shop) => (
-            <div
-              key={shop.id}
-              onClick={() => onSelectShop(shop.id)}
-              className={clsx(
-                "bg-white p-5 rounded-2xl border transition-all active:scale-[0.98] duration-200",
-                selectedShopId === shop.id
-                  ? "border-blue-500 shadow-md ring-1 ring-blue-500 bg-blue-50/10"
-                  : "border-gray-100 shadow-sm",
-              )}
-            >
-              {/* Header: Title, Category, Status */}
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3
-                      className={clsx(
-                        "font-bold text-lg transition-colors leading-tight",
-                        selectedShopId === shop.id
-                          ? "text-blue-600"
-                          : "text-gray-900",
-                      )}
-                    >
-                      {shop.name}
-                    </h3>
-                    <span className="text-[10px] text-blue-500 font-bold border border-blue-100 px-1 rounded">
-                      리솔
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
-                    <span
-                      className={clsx(
-                        "font-bold",
-                        shop.status === "영업중"
-                          ? "text-green-600"
-                          : "text-gray-400",
-                      )}
-                    >
-                      {shop.status}
-                    </span>
-                    <span className="text-gray-300">•</span>
-                    <div className="flex items-center">
-                      리뷰{" "}
-                      <span className="font-bold ml-1 text-gray-700">
-                        {shop.reviews.toLocaleString()}
-                      </span>
-                    </div>
-                    <span className="text-gray-300">•</span>
-                    <div className="flex items-center">
-                      <Star className="w-3 h-3 text-yellow-500 fill-current mr-0.5" />
-                      <span className="font-bold text-gray-700">
-                        {shop.rating}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center text-xs text-gray-500 line-clamp-1 mb-3">
-                    <MapPin className="w-3 h-3 mr-1 shrink-0" />
-                    {shop.address}
-                  </div>
-                </div>
-              </div>
-
-              {/* Photos Grid */}
-              <div className="grid grid-cols-3 gap-1.5 rounded-xl overflow-hidden h-24 mb-3">
-                {shop.images.slice(0, 3).map((img, idx) => (
-                  <div key={idx} className="relative aspect-square w-full">
-                    <img
-                      src={img}
-                      alt={`${shop.name} photo ${idx}`}
-                      className="w-full h-full object-cover"
-                    />
-                    {idx === 2 && shop.images.length > 3 && (
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-[10px] font-bold">
-                        +{shop.images.length - 3}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* Step 2: Detail Button (Visible only when selected) */}
-              {selectedShopId === shop.id && (
-                <div className="mt-4 pt-4 border-t border-blue-50">
-                  <Link
-                    href={`/shop/${shop.id}`}
-                    className="w-full py-3 bg-blue-600 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-1 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    상세보기
-                    <ChevronRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              )}
-            </div>
-          ))}
-          {/* Loading / End of list */}
-          <div className="text-center py-4 text-xs text-gray-400">
-            모든 업체를 불러왔습니다.
+      {!selectedShop && (
+        <div className="px-5 pb-4 border-b border-gray-100 shrink-0 bg-white relative">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-bold text-gray-900">
+              내 주변 리솔샵{" "}
+              <span className="text-blue-600">{SHOPS.length}</span>
+            </h2>
+            {/* Close Button (Visible when open) */}
+            {isOpen && (
+              <button
+                onClick={toggleSheet}
+                className="p-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
+                aria-label="Close List"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            <FilterChip label="전체" active />
+            <FilterChip label="비브람" />
+            <FilterChip label="택배가능" />
+            <FilterChip label="영업중" />
           </div>
         </div>
+      )}
+
+      {/* Content Area */}
+      <div className="flex-1 min-h-0 overflow-hidden bg-gray-50/50">
+        {selectedShop ? (
+          <ShopDetailView
+            shop={selectedShop}
+            onClose={() => onSelectShop(0)}
+            isMobile={true}
+          />
+        ) : (
+          <div
+            ref={listRef}
+            className="h-full overflow-y-auto overflow-x-hidden px-4 py-2 scrollbar-hide"
+          >
+            <div
+              className={clsx(
+                "space-y-3",
+                isOpen ? "pb-24" : "pb-[calc(85vh-500px+120px)]",
+              )}
+            >
+              {/* Bottom padding for FAB */}
+              {sortedShops.map((shop) => (
+                <div
+                  key={shop.id}
+                  onClick={() => onSelectShop(shop.id)}
+                  className={clsx(
+                    "bg-white p-5 rounded-2xl border transition-all active:scale-[0.98] duration-200",
+                    selectedShopId === shop.id
+                      ? "border-blue-500 shadow-md ring-1 ring-blue-500 bg-blue-50/10"
+                      : "border-gray-100 shadow-sm",
+                  )}
+                >
+                  {/* Header: Title, Category, Status */}
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-bold text-lg text-gray-900 leading-tight">
+                          {shop.name}
+                        </h3>
+                        <span className="text-[10px] text-blue-500 font-bold border border-blue-100 px-1 rounded">
+                          리솔
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                        <span
+                          className={clsx(
+                            "font-bold",
+                            shop.status === "영업중"
+                              ? "text-green-600"
+                              : "text-gray-400",
+                          )}
+                        >
+                          {shop.status}
+                        </span>
+                        <span className="text-gray-300">•</span>
+                        <div className="flex items-center">
+                          리뷰{" "}
+                          <span className="font-bold ml-1 text-gray-700">
+                            {shop.reviews.toLocaleString()}
+                          </span>
+                        </div>
+                        <span className="text-gray-300">•</span>
+                        <div className="flex items-center">
+                          <Star className="w-3 h-3 text-yellow-500 fill-current mr-0.5" />
+                          <span className="font-bold text-gray-700">
+                            {shop.rating}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center text-xs text-gray-500 line-clamp-1 mb-3">
+                        <MapPin className="w-3 h-3 mr-1 shrink-0" />
+                        {shop.address}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Photos Grid */}
+                  <div className="grid grid-cols-3 gap-1.5 rounded-xl overflow-hidden h-24 mb-3">
+                    {shop.images.slice(0, 3).map((img, idx) => (
+                      <div key={idx} className="relative aspect-square w-full">
+                        <img
+                          src={img}
+                          alt={`${shop.name} photo ${idx}`}
+                          className="w-full h-full object-cover"
+                        />
+                        {idx === 2 && shop.images.length > 3 && (
+                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-[10px] font-bold">
+                            +{shop.images.length - 3}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              {/* Loading / End of list */}
+              <div className="text-center py-4 text-xs text-gray-400">
+                모든 업체를 불러왔습니다.
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </motion.div>
   );

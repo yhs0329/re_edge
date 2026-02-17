@@ -43,6 +43,13 @@ export default function MapSection() {
           selectedShopId={selectedShopId}
           onSelectShop={handleSelectShop}
         />
+
+        {/* 
+          TODO: Map Relayout & Pan Logic
+          1. 사이드바 확장(selectedShopId 변경) 감지
+          2. transition duration(500ms) 이후 또는 도중에 map.relayout() 호출
+          3. 선택된 상점의 좌표로 map.panTo(position) 호출하여 중앙 보정
+        */}
       </div>
     </section>
   );
