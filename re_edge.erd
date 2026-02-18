@@ -4,8 +4,8 @@
   "settings": {
     "width": 2000,
     "height": 2000,
-    "scrollTop": -474.4582,
-    "scrollLeft": -417.831,
+    "scrollTop": -443.4582,
+    "scrollLeft": -250.831,
     "zoomLevel": 0.76,
     "show": 431,
     "database": 16,
@@ -61,7 +61,9 @@
           "RylU5kGxCodmesFW93BA0",
           "K3BqnvmgPaXApY3zmyI15",
           "IT4qx-PwaRqRwKKlGb9te",
-          "PWb8_3JzC8oW519LnOR2M"
+          "PWb8_3JzC8oW519LnOR2M",
+          "pgHkRbXmVhkwsYk5z_Cmi",
+          "GtE8MmjhJX0OO1eZhIpi8"
         ],
         "seqColumnIds": [
           "iGRCd0K1SdirSEj3ej4oL",
@@ -75,7 +77,9 @@
           "RylU5kGxCodmesFW93BA0",
           "K3BqnvmgPaXApY3zmyI15",
           "IT4qx-PwaRqRwKKlGb9te",
-          "PWb8_3JzC8oW519LnOR2M"
+          "PWb8_3JzC8oW519LnOR2M",
+          "pgHkRbXmVhkwsYk5z_Cmi",
+          "GtE8MmjhJX0OO1eZhIpi8"
         ],
         "ui": {
           "x": 786,
@@ -86,7 +90,7 @@
           "color": ""
         },
         "meta": {
-          "updateAt": 1771406912423,
+          "updateAt": 1771412585386,
           "createAt": 1771404847347
         }
       },
@@ -132,7 +136,8 @@
           "yBm0F6hyLn92FZxEsQSfv",
           "VZK5GW66DXkXuk2h56Svi",
           "GoVUMaBEPMOXZEe2TAikm",
-          "WD-LbvJZOreZ-rrZsV6ZB"
+          "WD-LbvJZOreZ-rrZsV6ZB",
+          "L30gXAs7zqpQLyrnVExR8"
         ],
         "seqColumnIds": [
           "RCvqI-pDuXW0GpXFU5PY1",
@@ -140,18 +145,19 @@
           "yBm0F6hyLn92FZxEsQSfv",
           "VZK5GW66DXkXuk2h56Svi",
           "GoVUMaBEPMOXZEe2TAikm",
-          "WD-LbvJZOreZ-rrZsV6ZB"
+          "WD-LbvJZOreZ-rrZsV6ZB",
+          "L30gXAs7zqpQLyrnVExR8"
         ],
         "ui": {
-          "x": 805.7409,
-          "y": 786.2439,
+          "x": 800.4777,
+          "y": 816.5071,
           "zIndex": 347,
           "widthName": 93,
           "widthComment": 101,
           "color": ""
         },
         "meta": {
-          "updateAt": 1771412109462,
+          "updateAt": 1771412701236,
           "createAt": 1771407336818
         }
       },
@@ -184,15 +190,15 @@
           "0ioqYsOem9Z-8pSYlSMzE"
         ],
         "ui": {
-          "x": 234.846,
-          "y": 780.6675,
+          "x": 229.5828,
+          "y": 810.9307,
           "zIndex": 447,
           "widthName": 60,
           "widthComment": 79,
           "color": ""
         },
         "meta": {
-          "updateAt": 1771412107714,
+          "updateAt": 1771412589930,
           "createAt": 1771411663068
         }
       },
@@ -219,15 +225,15 @@
           "DlO67MoNXBtBhbjv3zuuo"
         ],
         "ui": {
-          "x": 142.7406,
-          "y": 462.2463,
+          "x": 115.1089,
+          "y": 487.2463,
           "zIndex": 567,
           "widthName": 60,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1771412214981,
+          "updateAt": 1771412787106,
           "createAt": 1771411923727
         }
       }
@@ -289,7 +295,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1771406168008,
+          "updateAt": 1771412545643,
           "createAt": 1771404937413
         }
       },
@@ -1040,7 +1046,7 @@
         "comment": "FK",
         "dataType": "uuid",
         "default": "",
-        "options": 8,
+        "options": 0,
         "ui": {
           "keys": 2,
           "widthName": 60,
@@ -1049,8 +1055,68 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1771411967426,
+          "updateAt": 1771412608530,
           "createAt": 1771411942234
+        }
+      },
+      "pgHkRbXmVhkwsYk5z_Cmi": {
+        "id": "pgHkRbXmVhkwsYk5z_Cmi",
+        "tableId": "bTS1IWrdyJzYU4nnsB8oG",
+        "name": "last_verified_at",
+        "comment": "정보 최종 확인일",
+        "dataType": "timestamptz",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 79,
+          "widthComment": 93,
+          "widthDataType": 68,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1771412571822,
+          "createAt": 1771412553323
+        }
+      },
+      "GtE8MmjhJX0OO1eZhIpi8": {
+        "id": "GtE8MmjhJX0OO1eZhIpi8",
+        "tableId": "bTS1IWrdyJzYU4nnsB8oG",
+        "name": "created_at",
+        "comment": "생성일",
+        "dataType": "timestamptz",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 68,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1771412596658,
+          "createAt": 1771412585386
+        }
+      },
+      "L30gXAs7zqpQLyrnVExR8": {
+        "id": "L30gXAs7zqpQLyrnVExR8",
+        "tableId": "lKV7eCSS46qLE2PihHM02",
+        "name": "click_count",
+        "comment": "간단한 내부 효율 측정용",
+        "dataType": "int",
+        "default": "0",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 132,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1771412710442,
+          "createAt": 1771412701236
         }
       }
     },
@@ -1065,8 +1131,8 @@
           "columnIds": [
             "iGRCd0K1SdirSEj3ej4oL"
           ],
-          "x": 1257,
-          "y": 575,
+          "x": 1265,
+          "y": 599,
           "direction": 2
         },
         "end": {
@@ -1087,14 +1153,14 @@
         "id": "bVJ_e6fN0e5r5gv1uZ0fy",
         "identification": false,
         "relationshipType": 16,
-        "startRelationshipType": 2,
+        "startRelationshipType": 1,
         "start": {
           "tableId": "bTS1IWrdyJzYU4nnsB8oG",
           "columnIds": [
             "iGRCd0K1SdirSEj3ej4oL"
           ],
           "x": 786,
-          "y": 575,
+          "y": 599,
           "direction": 1
         },
         "end": {
@@ -1102,8 +1168,8 @@
           "columnIds": [
             "nVSNjnTs9irjgn2283hN1"
           ],
-          "x": 604.7406,
-          "y": 574.2463,
+          "x": 577.1089,
+          "y": 599.2463,
           "direction": 2
         },
         "meta": {

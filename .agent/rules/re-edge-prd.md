@@ -76,6 +76,7 @@ Also, write the `Walkthrough` and `Implement Plan` to be shown to users in Korea
   - **기능:** 주요 창갈이용 고무(Vibram XS Grip 2, Edge, Neo Friction 등)의 물성(마찰력 vs 내구성) 비교표 제공.
   - **목적:** 사용자가 수선 시점이 아니더라도 정보를 얻기 위해 검색(SEO)하여 유입되도록 유도 (정보의 권위 확보).
   - **수익화:** "이 고무를 쓰면 마모가 빠르니 슈구로 보강하세요" -> 슈구 구매 링크 연결.
+  - 별도의 테이블 생성 없이, articles 테이블에 속하게 될 컨텐츠로 관리(직접 글 작성)
 
 - **[Must-Have] Smart Clipboard & History (비로그인 개인화):**
   - **원터치 복사:** 주소/전화번호 옆 '복사' 버튼 배치. 클릭 시 "주소가 복사되었습니다. 택배 송장에 붙여넣으세요!" Toast 메시지 출력.
