@@ -164,6 +164,7 @@ export type Database = {
           name: string
           notice: string | null
           phone: string | null
+          slug: string
           tags: string[] | null
         }
         Insert: {
@@ -179,6 +180,7 @@ export type Database = {
           name: string
           notice?: string | null
           phone?: string | null
+          slug: string
           tags?: string[] | null
         }
         Update: {
@@ -194,6 +196,7 @@ export type Database = {
           name?: string
           notice?: string | null
           phone?: string | null
+          slug?: string
           tags?: string[] | null
         }
         Relationships: []
@@ -541,6 +544,7 @@ export type Database = {
           name: string
           notice: string
           phone: string
+          slug: string
           tags: string[]
         }[]
       }

@@ -7,7 +7,15 @@ import {
   Marker,
 } from "react-naver-maps";
 
-export default function MapViewer({ shops }: { shops: any[] }) {
+export default function MapViewer({
+  shops,
+  onSelectShop,
+  selectedShopId,
+}: {
+  shops: any[];
+  onSelectShop: (slug: string | null) => void;
+  selectedShopId: string | null;
+}) {
   return (
     <MapDiv
       style={{
@@ -15,12 +23,24 @@ export default function MapViewer({ shops }: { shops: any[] }) {
         height: "100%",
       }}
     >
-      <MyMap shops={shops} />
+      <MyMap
+        shops={shops}
+        onSelectShop={onSelectShop}
+        selectedShopId={selectedShopId}
+      />
     </MapDiv>
   );
 }
 
-function MyMap({ shops }: { shops: any[] }) {
+function MyMap({
+  shops,
+  onSelectShop,
+  selectedShopId,
+}: {
+  shops: any[];
+  onSelectShop: (slug: string | null) => void;
+  selectedShopId: string | null;
+}) {
   const navermaps = useNavermaps();
 
   return (
@@ -33,6 +53,7 @@ function MyMap({ shops }: { shops: any[] }) {
           key={shop.id}
           position={new navermaps.LatLng(shop.lat, shop.lng)}
           title={shop.name}
+          onClick={() => onSelectShop(shop.slug)}
         />
       ))}
     </NaverMap>

@@ -2,7 +2,15 @@
 
 import MapViewer from "./MapViewer";
 
-export default function ClientMapWrapper({ shops }: { shops: any[] }) {
+export default function ClientMapWrapper({
+  shops,
+  onSelectShop,
+  selectedShopId,
+}: {
+  shops: any[];
+  onSelectShop: (slug: string | null) => void;
+  selectedShopId: string | null;
+}) {
   const NEXT_PUBLIC_NAVER_MAP_CLIENT_ID =
     process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
 
@@ -19,5 +27,11 @@ export default function ClientMapWrapper({ shops }: { shops: any[] }) {
     );
   }
 
-  return <MapViewer shops={shops} />;
+  return (
+    <MapViewer
+      shops={shops}
+      onSelectShop={onSelectShop}
+      selectedShopId={selectedShopId}
+    />
+  );
 }

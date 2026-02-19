@@ -1,5 +1,6 @@
 export interface Shop {
   id: string;
+  slug: string; // SEO용 슬러그 추가
   name: string;
   address: string;
   phone: string;
@@ -24,6 +25,7 @@ export interface Shop {
 export const SHOPS: Shop[] = [
   {
     id: "1",
+    slug: "shumaster",
     name: "슈마스터",
     address: "서울 성동구 성수이로 118",
     phone: "02-1234-5678",

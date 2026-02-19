@@ -22,8 +22,8 @@ import { SHOPS } from "@/lib/constants";
 import ShopDetailView from "@/components/shop/ShopDetailView";
 
 interface ShopBottomSheetProps {
-  selectedShopId: number | null;
-  onSelectShop: (id: number) => void;
+  selectedShopId: string | null; // 실제로는 슬러그가 전달됨
+  onSelectShop: (slug: string | null) => void;
 }
 
 const FilterChip = ({
@@ -59,13 +59,13 @@ export default function ShopBottomSheet({
   const sortedShops = useMemo(() => {
     if (!selectedShopId) return shops;
     return [...shops].sort((a, b) => {
-      if (a.id === selectedShopId) return -1;
-      if (b.id === selectedShopId) return 1;
+      if (a.slug === selectedShopId) return -1;
+      if (b.slug === selectedShopId) return 1;
       return 0;
     });
   }, [selectedShopId, shops]);
 
-  const selectedShop = shops.find((s) => s.id === selectedShopId);
+  const selectedShop = shops.find((s) => s.slug === selectedShopId);
 
   // Snap points
   const SNAP_POINTS = {
@@ -211,7 +211,7 @@ export default function ShopBottomSheet({
         {selectedShop ? (
           <ShopDetailView
             shop={selectedShop}
-            onClose={() => onSelectShop(0)}
+            onClose={() => onSelectShop(null)}
             isMobile={true}
           />
         ) : (
@@ -229,10 +229,10 @@ export default function ShopBottomSheet({
               {sortedShops.map((shop) => (
                 <div
                   key={shop.id}
-                  onClick={() => onSelectShop(shop.id)}
+                  onClick={() => onSelectShop(shop.slug)}
                   className={clsx(
                     "bg-white p-5 rounded-2xl border transition-all active:scale-[0.98] duration-200",
-                    selectedShopId === shop.id
+                    selectedShopId === shop.slug
                       ? "border-blue-500 shadow-md ring-1 ring-blue-500 bg-blue-50/10"
                       : "border-gray-100 shadow-sm",
                   )}

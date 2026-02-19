@@ -1,13 +1,12 @@
 "use client";
 
-import { SHOPS, Shop } from "@/lib/constants";
 import { MapPin, Star, ChevronLeft, Search } from "lucide-react";
 import clsx from "clsx";
 import ShopDetailView from "@/components/shop/ShopDetailView";
 
 interface ShopSidebarProps {
-  selectedShopId: number | null;
-  onSelectShop: (id: number) => void;
+  selectedShopId: string | null; // 실제로는 슬러그가 전달됨
+  onSelectShop: (slug: string | null) => void;
 }
 
 const FilterChip = ({
@@ -34,7 +33,8 @@ export default function ShopSidebar({
   onSelectShop,
   shops,
 }: ShopSidebarProps & { shops: any[] }) {
-  const selectedShop = shops.find((s) => s.id === selectedShopId);
+  // ID 대신 slug로 검색
+  const selectedShop = shops.find((s) => s.slug === selectedShopId);
 
   return (
     <aside
@@ -46,7 +46,7 @@ export default function ShopSidebar({
       {/* Collapse Button (Expanded View Only) */}
       {selectedShopId && (
         <button
-          onClick={() => onSelectShop(0)}
+          onClick={() => onSelectShop(null)}
           className="absolute right-[-24px] top-1/2 -translate-y-1/2 w-12 h-12 bg-white border border-gray-200 rounded-full shadow-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-gray-50 transition-all z-50 group active:scale-95 cursor-pointer"
           title="목록으로 돌아가기"
         >
@@ -57,7 +57,7 @@ export default function ShopSidebar({
       {selectedShop ? (
         <ShopDetailView
           shop={selectedShop}
-          onClose={() => onSelectShop(0)}
+          onClose={() => onSelectShop(null)}
           isMobile={false}
         />
       ) : (
@@ -97,10 +97,10 @@ export default function ShopSidebar({
             {shops.map((shop) => (
               <div
                 key={shop.id}
-                onClick={() => onSelectShop(shop.id)}
+                onClick={() => onSelectShop(shop.slug)}
                 className={clsx(
                   "p-4 rounded-xl border transition-all cursor-pointer group",
-                  selectedShopId === shop.id
+                  selectedShopId === shop.slug
                     ? "bg-white border-blue-500 shadow-md ring-1 ring-blue-500"
                     : "bg-white border-gray-100 shadow-sm hover:border-blue-200 hover:shadow",
                 )}
@@ -112,7 +112,7 @@ export default function ShopSidebar({
                       <h3
                         className={clsx(
                           "font-bold text-lg transition-colors leading-tight truncate max-w-[200px]",
-                          selectedShopId === shop.id
+                          selectedShopId === shop.slug
                             ? "text-blue-600"
                             : "text-gray-900 group-hover:text-blue-600",
                         )}
@@ -131,7 +131,7 @@ export default function ShopSidebar({
                           shop.is_verified ? "text-green-600" : "text-gray-400",
                         )}
                       >
-                        {shop.is_verified ? "영업중" : "준비중"}
+                        {shop.is_verified ? "인증됨" : "미인증"}
                       </span>
                       <span className="text-gray-300">•</span>
                       <div className="flex items-center">
