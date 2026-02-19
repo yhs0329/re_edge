@@ -6,25 +6,38 @@ import ClientMapWrapper from "@/components/map/ClientMapWrapper";
 import ShopBottomSheet from "@/components/home/ShopBottomSheet";
 import ShopSidebar from "@/components/home/ShopSidebar";
 import FloatingActionButton from "@/components/common/FloatingActionButton";
+import { Shop } from "@/lib/constants";
+import { useState, useEffect } from "react";
 
-export default function MapSection({ initialShops }: { initialShops: any[] }) {
+export default function MapSection({ initialShops }: { initialShops: Shop[] }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // URL에서 shop 파라미터 읽기
-  const selectedShopId = searchParams.get("shop");
+  // URL 파라미터와 동기화되는 로컬 상태 (즉각적인 UI 반응을 위함)
+  const [selectedShopId, setSelectedShopId] = useState<string | null>(
+    searchParams.get("shop"),
+  );
+
+  // URL 파라미터가 변경될 때 로컬 상태 동기화 (뒤로가기 등 대응)
+  useEffect(() => {
+    setSelectedShopId(searchParams.get("shop"));
+  }, [searchParams]);
 
   const handleSelectShop = (slug: string | null) => {
-    const params = new URLSearchParams(searchParams.toString());
+    // 1. 로컬 상태 즉시 업데이트 (Instant UI)
+    setSelectedShopId(slug);
+
+    // 2. 브라우저 URL 업데이트 (Next.js 라우터 오버헤드 없이 History API 사용)
+    const params = new URLSearchParams(window.location.search);
     if (slug && slug !== "0") {
       params.set("shop", slug);
     } else {
       params.delete("shop");
     }
 
-    // URL 업데이트 (상태 변경 대신 내비게이션 사용)
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    const newUrl = `${pathname}?${params.toString()}`;
+    window.history.replaceState(null, "", newUrl);
   };
 
   return (

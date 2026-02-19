@@ -18,7 +18,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import clsx from "clsx";
-import { SHOPS } from "@/lib/constants";
+import Image from "next/image";
+import { Shop, SHOPS } from "@/lib/constants";
 import ShopDetailView from "@/components/shop/ShopDetailView";
 
 interface ShopBottomSheetProps {
@@ -49,7 +50,7 @@ export default function ShopBottomSheet({
   selectedShopId,
   onSelectShop,
   shops,
-}: ShopBottomSheetProps & { shops: any[] }) {
+}: ShopBottomSheetProps & { shops: Shop[] }) {
   const [isOpen, setIsOpen] = useState(false);
   const controls = useAnimation();
   const dragControls = useDragControls();
@@ -114,9 +115,23 @@ export default function ShopBottomSheet({
         listRef.current.scrollTo({ top: 0, behavior: "smooth" });
       }
     } else {
-      controls.start({ y: SNAP_POINTS.COLLAPSED });
+      // 업체를 닫을 때는 완전히 닫지 않고 목록(EXPANDED) 상태로 유지
+      // 만약 isOpen이 false인 상태에서 처음 로드되는 경우라면 COLLAPSED 유지
+      if (isOpen) {
+        controls.start({ y: SNAP_POINTS.EXPANDED });
+        setIsOpen(true);
+      } else {
+        controls.start({ y: SNAP_POINTS.COLLAPSED });
+      }
     }
-  }, [selectedShopId, controls, SNAP_POINTS.PEEK, SNAP_POINTS.COLLAPSED]);
+  }, [
+    selectedShopId,
+    controls,
+    SNAP_POINTS.PEEK,
+    SNAP_POINTS.COLLAPSED,
+    SNAP_POINTS.EXPANDED,
+    SNAP_POINTS.FULL,
+  ]);
 
   return (
     <motion.div
@@ -129,7 +144,7 @@ export default function ShopBottomSheet({
       dragConstraints={{ top: 0, bottom: 0 }}
       dragElastic={0.2}
       onDragEnd={handleDragEnd}
-      className="md:hidden absolute bottom-0 left-0 right-0 z-40 flex h-[85vh] flex-col rounded-t-3xl bg-white shadow-[0_-5px_20px_rgba(0,0,0,0.1)] overflow-hidden will-change-transform"
+      className="md:hidden absolute bottom-0 left-0 right-0 z-40 flex h-[85vh] flex-col rounded-t-3xl bg-white shadow-[0_-5px_20px_rgba(0,0,0,0.1)] will-change-transform"
     >
       {/* Floating Trigger Button (Visible when collapsed) */}
       <motion.button
@@ -186,16 +201,6 @@ export default function ShopBottomSheet({
               내 주변 리솔샵{" "}
               <span className="text-blue-600">{shops.length}</span>
             </h2>
-            {/* Close Button (Visible when open) */}
-            {isOpen && (
-              <button
-                onClick={toggleSheet}
-                className="p-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
-                aria-label="Close List"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            )}
           </div>
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             <FilterChip label="전체" active />
@@ -291,10 +296,12 @@ export default function ShopBottomSheet({
                             key={idx}
                             className="relative aspect-square w-full"
                           >
-                            <img
+                            <Image
                               src={img}
                               alt={`${shop.name} photo ${idx}`}
-                              className="w-full h-full object-cover"
+                              fill
+                              sizes="(max-width: 768px) 33vw, 100px"
+                              className="object-cover"
                             />
                             {idx === 2 && shop.images.length > 3 && (
                               <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-[10px] font-bold">
