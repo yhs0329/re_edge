@@ -32,8 +32,9 @@ const FilterChip = ({
 export default function ShopSidebar({
   selectedShopId,
   onSelectShop,
-}: ShopSidebarProps) {
-  const selectedShop = SHOPS.find((s) => s.id === selectedShopId);
+  shops,
+}: ShopSidebarProps & { shops: any[] }) {
+  const selectedShop = shops.find((s) => s.id === selectedShopId);
 
   return (
     <aside
@@ -66,7 +67,7 @@ export default function ShopSidebar({
             <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
               전국 리솔 전문점{" "}
               <span className="text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md text-sm">
-                {SHOPS.length}
+                {shops.length}
               </span>
             </h2>
 
@@ -93,7 +94,7 @@ export default function ShopSidebar({
 
           {/* Shop List */}
           <div className="flex-1 overflow-y-auto bg-gray-50/30 p-4 space-y-4 scrollbar-hide">
-            {SHOPS.map((shop) => (
+            {shops.map((shop) => (
               <div
                 key={shop.id}
                 onClick={() => onSelectShop(shop.id)}
@@ -110,7 +111,7 @@ export default function ShopSidebar({
                     <div className="flex items-center gap-2 mb-1">
                       <h3
                         className={clsx(
-                          "font-bold text-lg transition-colors leading-tight",
+                          "font-bold text-lg transition-colors leading-tight truncate max-w-[200px]",
                           selectedShopId === shop.id
                             ? "text-blue-600"
                             : "text-gray-900 group-hover:text-blue-600",
@@ -118,7 +119,7 @@ export default function ShopSidebar({
                       >
                         {shop.name}
                       </h3>
-                      <span className="text-xs text-blue-500 font-medium">
+                      <span className="text-xs text-blue-500 font-medium whitespace-nowrap">
                         리솔
                       </span>
                     </div>
@@ -127,53 +128,57 @@ export default function ShopSidebar({
                       <span
                         className={clsx(
                           "font-bold",
-                          shop.status === "영업중"
-                            ? "text-green-600"
-                            : "text-gray-400",
+                          shop.is_verified ? "text-green-600" : "text-gray-400",
                         )}
                       >
-                        {shop.status}
+                        {shop.is_verified ? "영업중" : "준비중"}
                       </span>
                       <span className="text-gray-300">•</span>
                       <div className="flex items-center">
                         리뷰{" "}
-                        <span className="font-bold ml-1 text-gray-700">
-                          {shop.reviews.toLocaleString()}
-                        </span>
+                        <span className="font-bold ml-1 text-gray-700">0</span>
                       </div>
                       <span className="text-gray-300">•</span>
                       <div className="flex items-center">
                         <Star className="w-3 h-3 text-yellow-500 fill-current mr-0.5" />
-                        <span className="font-bold text-gray-700">
-                          {shop.rating}
-                        </span>
+                        <span className="font-bold text-gray-700">0.0</span>
                       </div>
                     </div>
 
                     <div className="flex items-center text-xs text-gray-500 line-clamp-1 mb-3">
                       <MapPin className="w-3 h-3 mr-1 shrink-0" />
-                      {shop.address}
+                      <span className="truncate">{shop.address}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Photos (Naver Maps Style) */}
                 <div className="grid grid-cols-3 gap-1 rounded-xl overflow-hidden h-24 mb-3">
-                  {shop.images.slice(0, 3).map((img, idx) => (
-                    <div key={idx} className="relative aspect-square w-full">
-                      <img
-                        src={img}
-                        alt={`${shop.name} photo ${idx}`}
-                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                      />
-                      {idx === 2 && shop.images.length > 3 && (
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-xs font-bold">
-                          +{shop.images.length - 3}
-                        </div>
-                      )}
+                  {shop.images && shop.images.length > 0 ? (
+                    shop.images.slice(0, 3).map((img: string, idx: number) => (
+                      <div key={idx} className="relative aspect-square w-full">
+                        <img
+                          src={img}
+                          alt={`${shop.name} photo ${idx}`}
+                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                        />
+                        {idx === 2 && shop.images.length > 3 && (
+                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-xs font-bold">
+                            +{shop.images.length - 3}
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="col-span-3 bg-gray-100 flex items-center justify-center rounded-xl">
+                      <p className="text-[10px] text-gray-400 font-bold">
+                        준비된 사진이 없습니다
+                      </p>
                     </div>
-                  ))}
-                  {shop.images.length < 3 &&
+                  )}
+                  {shop.images &&
+                    shop.images.length > 0 &&
+                    shop.images.length < 3 &&
                     Array.from({ length: 3 - shop.images.length }).map(
                       (_, idx) => (
                         <div

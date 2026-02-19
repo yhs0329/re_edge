@@ -1,8 +1,13 @@
 "use client";
 
-import { NaverMap, Container as MapDiv, useNavermaps } from "react-naver-maps";
+import {
+  NaverMap,
+  Container as MapDiv,
+  useNavermaps,
+  Marker,
+} from "react-naver-maps";
 
-export default function MapViewer() {
+export default function MapViewer({ shops }: { shops: any[] }) {
   return (
     <MapDiv
       style={{
@@ -10,20 +15,26 @@ export default function MapViewer() {
         height: "100%",
       }}
     >
-      <MyMap />
+      <MyMap shops={shops} />
     </MapDiv>
   );
 }
 
-function MyMap() {
+function MyMap({ shops }: { shops: any[] }) {
   const navermaps = useNavermaps();
 
   return (
     <NaverMap
       defaultCenter={new navermaps.LatLng(37.5666805, 126.9784147)}
-      defaultZoom={15}
+      defaultZoom={12}
     >
-      {/* Markers will be added here later */}
+      {shops.map((shop) => (
+        <Marker
+          key={shop.id}
+          position={new navermaps.LatLng(shop.lat, shop.lng)}
+          title={shop.name}
+        />
+      ))}
     </NaverMap>
   );
 }

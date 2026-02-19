@@ -7,7 +7,7 @@ import ShopBottomSheet from "@/components/home/ShopBottomSheet";
 import ShopSidebar from "@/components/home/ShopSidebar";
 import FloatingActionButton from "@/components/common/FloatingActionButton";
 
-export default function MapSection() {
+export default function MapSection({ initialShops }: { initialShops: any[] }) {
   const [selectedShopId, setSelectedShopId] = useState<number | null>(null);
 
   const handleSelectShop = (id: number) => {
@@ -23,6 +23,7 @@ export default function MapSection() {
       <ShopSidebar
         selectedShopId={selectedShopId}
         onSelectShop={handleSelectShop}
+        shops={initialShops}
       />
 
       {/* Main Content (Map + Overlays) */}
@@ -32,7 +33,7 @@ export default function MapSection() {
 
         {/* Fullscreen Map Background */}
         <div className="absolute inset-0 z-0">
-          <ClientMapWrapper />
+          <ClientMapWrapper shops={initialShops} />
         </div>
 
         {/* Floating Action Button */}
@@ -42,6 +43,7 @@ export default function MapSection() {
         <ShopBottomSheet
           selectedShopId={selectedShopId}
           onSelectShop={handleSelectShop}
+          shops={initialShops}
         />
 
         {/* 

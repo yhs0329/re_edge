@@ -62,31 +62,42 @@ export default function ShopDetailView({
 
       <div className="flex-1 overflow-y-auto pb-24 scrollbar-hide">
         {/* Zone 1: Hero Section (Slider Concept) */}
-        <div className="relative w-full overflow-hidden">
-          <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide">
-            {shop.images.map((img, idx) => (
-              <div
-                key={idx}
-                className="flex-none w-full snap-start aspect-4/3 max-h-[400px]"
-              >
-                <img
-                  src={img}
-                  alt={`${shop.name} view ${idx}`}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            ))}
-          </div>
+        <div className="relative w-full overflow-hidden bg-gray-100">
+          {shop.images && shop.images.length > 0 ? (
+            <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide">
+              {shop.images.map((img: string, idx: number) => (
+                <div
+                  key={idx}
+                  className="flex-none w-full snap-start aspect-4/3 max-h-[400px]"
+                >
+                  <img
+                    src={img}
+                    alt={`${shop.name} view ${idx}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="aspect-4/3 flex items-center justify-center text-gray-400 font-bold flex-col gap-2">
+              <Info className="w-8 h-8 opacity-20" />
+              준비된 사진이 없습니다
+            </div>
+          )}
           {/* Hero Overlay */}
           <div className="absolute top-4 left-4 flex gap-2">
-            <span className="px-3 py-1 bg-blue-600 text-white text-[10px] font-black rounded-full shadow-lg flex items-center gap-1">
-              <BadgeCheck className="w-3 h-3" /> VERIFIED
-            </span>
+            {shop.is_verified && (
+              <span className="px-3 py-1 bg-blue-600 text-white text-[10px] font-black rounded-full shadow-lg flex items-center gap-1">
+                <BadgeCheck className="w-3 h-3" /> VERIFIED
+              </span>
+            )}
           </div>
           {/* Photo Counter */}
-          <div className="absolute bottom-4 right-4 bg-black/50 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded-md font-bold">
-            1 / {shop.images.length}
-          </div>
+          {shop.images && shop.images.length > 0 && (
+            <div className="absolute bottom-4 right-4 bg-black/50 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded-md font-bold">
+              1 / {shop.images.length}
+            </div>
+          )}
         </div>
 
         {/* Content Container */}
@@ -261,12 +272,12 @@ export default function ShopDetailView({
                         <span
                           className={clsx(
                             "text-xs font-black",
-                            shop.status === "영업중"
+                            shop.is_verified
                               ? "text-green-600"
-                              : "text-red-500",
+                              : "text-gray-400",
                           )}
                         >
-                          {shop.status}
+                          {shop.is_verified ? "영업중" : "준비중"}
                         </span>
                       </div>
                     </div>
@@ -347,7 +358,7 @@ export default function ShopDetailView({
           주소 복사
         </button>
         <a
-          href={`tel:02-1234-5678`}
+          href={`tel:${shop.phone || ""}`}
           className="flex-[1.5] flex items-center justify-center gap-2 bg-blue-600 text-white py-4 rounded-2xl text-sm font-black shadow-xl shadow-blue-100 active:scale-95 transition-all"
         >
           <Phone className="w-4 h-4 fill-current" />

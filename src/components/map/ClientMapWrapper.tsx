@@ -1,9 +1,8 @@
 "use client";
 
-import { NavermapsProvider } from "react-naver-maps";
 import MapViewer from "./MapViewer";
 
-export default function ClientMapWrapper() {
+export default function ClientMapWrapper({ shops }: { shops: any[] }) {
   const NEXT_PUBLIC_NAVER_MAP_CLIENT_ID =
     process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
 
@@ -20,13 +19,5 @@ export default function ClientMapWrapper() {
     );
   }
 
-  return (
-    <NavermapsProvider
-      ncpClientId={NEXT_PUBLIC_NAVER_MAP_CLIENT_ID}
-      // error={<div className="p-4 text-red-500">Failed to load Naver Map</div>}
-      // loading={<div className="p-4 text-gray-500">Loading Map...</div>}
-    >
-      <MapViewer />
-    </NavermapsProvider>
-  );
+  return <MapViewer shops={shops} />;
 }

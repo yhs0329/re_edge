@@ -526,6 +526,24 @@ export type Database = {
         Returns: boolean
       }
       geomfromewkt: { Args: { "": string }; Returns: unknown }
+      get_shops_with_coords: {
+        Args: never
+        Returns: {
+          address: string
+          business_hours: Json
+          delivery_available: boolean
+          id: string
+          images: string[]
+          is_verified: boolean
+          last_verified_at: string
+          lat: number
+          lng: number
+          name: string
+          notice: string
+          phone: string
+          tags: string[]
+        }[]
+      }
       gettransactionid: { Args: never; Returns: unknown }
       longtransactionsenabled: { Args: never; Returns: boolean }
       populate_geometry_columns:

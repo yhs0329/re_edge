@@ -48,7 +48,8 @@ const FilterChip = ({
 export default function ShopBottomSheet({
   selectedShopId,
   onSelectShop,
-}: ShopBottomSheetProps) {
+  shops,
+}: ShopBottomSheetProps & { shops: any[] }) {
   const [isOpen, setIsOpen] = useState(false);
   const controls = useAnimation();
   const dragControls = useDragControls();
@@ -56,15 +57,15 @@ export default function ShopBottomSheet({
 
   // Sort shops so selected one appears first
   const sortedShops = useMemo(() => {
-    if (!selectedShopId) return SHOPS;
-    return [...SHOPS].sort((a, b) => {
+    if (!selectedShopId) return shops;
+    return [...shops].sort((a, b) => {
       if (a.id === selectedShopId) return -1;
       if (b.id === selectedShopId) return 1;
       return 0;
     });
-  }, [selectedShopId]);
+  }, [selectedShopId, shops]);
 
-  const selectedShop = SHOPS.find((s) => s.id === selectedShopId);
+  const selectedShop = shops.find((s) => s.id === selectedShopId);
 
   // Snap points
   const SNAP_POINTS = {
@@ -183,7 +184,7 @@ export default function ShopBottomSheet({
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-bold text-gray-900">
               내 주변 리솔샵{" "}
-              <span className="text-blue-600">{SHOPS.length}</span>
+              <span className="text-blue-600">{shops.length}</span>
             </h2>
             {/* Close Button (Visible when open) */}
             {isOpen && (
@@ -240,10 +241,10 @@ export default function ShopBottomSheet({
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-bold text-lg text-gray-900 leading-tight">
+                        <h3 className="font-bold text-lg text-gray-900 leading-tight truncate max-w-[180px]">
                           {shop.name}
                         </h3>
-                        <span className="text-[10px] text-blue-500 font-bold border border-blue-100 px-1 rounded">
+                        <span className="text-[10px] text-blue-500 font-bold border border-blue-100 px-1 rounded whitespace-nowrap">
                           리솔
                         </span>
                       </div>
@@ -252,52 +253,63 @@ export default function ShopBottomSheet({
                         <span
                           className={clsx(
                             "font-bold",
-                            shop.status === "영업중"
+                            shop.is_verified
                               ? "text-green-600"
                               : "text-gray-400",
                           )}
                         >
-                          {shop.status}
+                          {shop.is_verified ? "영업중" : "준비중"}
                         </span>
                         <span className="text-gray-300">•</span>
                         <div className="flex items-center">
                           리뷰{" "}
                           <span className="font-bold ml-1 text-gray-700">
-                            {shop.reviews.toLocaleString()}
+                            0
                           </span>
                         </div>
                         <span className="text-gray-300">•</span>
                         <div className="flex items-center">
                           <Star className="w-3 h-3 text-yellow-500 fill-current mr-0.5" />
-                          <span className="font-bold text-gray-700">
-                            {shop.rating}
-                          </span>
+                          <span className="font-bold text-gray-700">0.0</span>
                         </div>
                       </div>
 
                       <div className="flex items-center text-xs text-gray-500 line-clamp-1 mb-3">
                         <MapPin className="w-3 h-3 mr-1 shrink-0" />
-                        {shop.address}
+                        <span className="truncate">{shop.address}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Photos Grid */}
                   <div className="grid grid-cols-3 gap-1.5 rounded-xl overflow-hidden h-24 mb-3">
-                    {shop.images.slice(0, 3).map((img, idx) => (
-                      <div key={idx} className="relative aspect-square w-full">
-                        <img
-                          src={img}
-                          alt={`${shop.name} photo ${idx}`}
-                          className="w-full h-full object-cover"
-                        />
-                        {idx === 2 && shop.images.length > 3 && (
-                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-[10px] font-bold">
-                            +{shop.images.length - 3}
+                    {shop.images && shop.images.length > 0 ? (
+                      shop.images
+                        .slice(0, 3)
+                        .map((img: string, idx: number) => (
+                          <div
+                            key={idx}
+                            className="relative aspect-square w-full"
+                          >
+                            <img
+                              src={img}
+                              alt={`${shop.name} photo ${idx}`}
+                              className="w-full h-full object-cover"
+                            />
+                            {idx === 2 && shop.images.length > 3 && (
+                              <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-[10px] font-bold">
+                                +{shop.images.length - 3}
+                              </div>
+                            )}
                           </div>
-                        )}
+                        ))
+                    ) : (
+                      <div className="col-span-3 bg-gray-100 flex items-center justify-center rounded-xl">
+                        <p className="text-[10px] text-gray-400 font-bold">
+                          준비된 사진이 없습니다
+                        </p>
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
               ))}
