@@ -164,8 +164,10 @@ export type Database = {
           name: string
           notice: string | null
           phone: string | null
+          process: Json | null
           slug: string
           tags: string[] | null
+          turnaround: Json | null
         }
         Insert: {
           address?: string | null
@@ -180,8 +182,10 @@ export type Database = {
           name: string
           notice?: string | null
           phone?: string | null
+          process?: Json | null
           slug: string
           tags?: string[] | null
+          turnaround?: Json | null
         }
         Update: {
           address?: string | null
@@ -196,8 +200,10 @@ export type Database = {
           name?: string
           notice?: string | null
           phone?: string | null
+          process?: Json | null
           slug?: string
           tags?: string[] | null
+          turnaround?: Json | null
         }
         Relationships: []
       }
@@ -544,8 +550,10 @@ export type Database = {
           name: string
           notice: string
           phone: string
+          process: Json
           slug: string
           tags: string[]
+          turnaround: Json
         }[]
       }
       gettransactionid: { Args: never; Returns: unknown }

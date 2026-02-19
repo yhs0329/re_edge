@@ -1,6 +1,5 @@
-"use client";
-
 import { useState } from "react";
+import Image from "next/image";
 import { Shop } from "@/lib/constants";
 import {
   X,
@@ -33,10 +32,22 @@ export default function ShopDetailView({
   isMobile = false,
 }: ShopDetailViewProps) {
   const [activeTab, setActiveTab] = useState<"info" | "reviews">("info");
+  const [isProcessModalOpen, setIsProcessModalOpen] = useState(false);
+  const [isPricesModalOpen, setIsPricesModalOpen] = useState(false);
 
   const copyAddress = () => {
     navigator.clipboard.writeText(shop.address);
     alert("주소가 복사되었습니다.");
+  };
+
+  const getTodayHours = () => {
+    if (!shop.business_hours) return "별도 문의";
+    const days = ["일", "월", "화", "수", "목", "금", "토"];
+    const today = days[new Date().getDay()];
+    const hours = shop.business_hours[today];
+
+    if (!hours || hours.is_closed) return "오늘 휴무";
+    return `${hours.open} - ${hours.close}${hours.break ? ` (휴게 ${hours.break})` : ""}`;
   };
 
   return (
@@ -60,44 +71,43 @@ export default function ShopDetailView({
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-24 scrollbar-hide">
-        {/* Zone 1: Hero Section (Slider Concept) */}
-        <div className="relative w-full overflow-hidden bg-gray-100">
+      <div className="flex-1 overflow-y-auto pb-24 scrollbar-hide text-slate-900">
+        {/* Zone 1: Hero Section (Compact Slider) */}
+        <div className="relative w-full overflow-hidden bg-gray-50 border-b border-gray-100">
           {shop.images && shop.images.length > 0 ? (
-            <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide">
+            <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide h-[200px] md:h-[180px]">
               {shop.images.map((img: string, idx: number) => (
                 <div
                   key={idx}
-                  className="flex-none w-full snap-start aspect-4/3 max-h-[400px]"
+                  className="flex-none w-full snap-start relative group"
                 >
-                  <img
+                  <Image
                     src={img}
                     alt={`${shop.name} view ${idx}`}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    priority={idx === 0}
                   />
+                  <div className="absolute bottom-3 right-4 bg-black/40 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded-md font-bold z-10">
+                    {idx + 1} / {shop.images.length}
+                  </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="aspect-4/3 flex items-center justify-center text-gray-400 font-bold flex-col gap-2">
+            <div className="h-[180px] flex items-center justify-center text-gray-400 font-bold flex-col gap-2 bg-gray-50">
               <Info className="w-8 h-8 opacity-20" />
               준비된 사진이 없습니다
             </div>
           )}
           {/* Hero Overlay */}
-          <div className="absolute top-4 left-4 flex gap-2">
+          <div className="absolute top-4 left-4 flex gap-2 z-10">
             {shop.is_verified && (
               <span className="px-3 py-1 bg-blue-600 text-white text-[10px] font-black rounded-full shadow-lg flex items-center gap-1">
                 <BadgeCheck className="w-3 h-3" /> VERIFIED
               </span>
             )}
           </div>
-          {/* Photo Counter */}
-          {shop.images && shop.images.length > 0 && (
-            <div className="absolute bottom-4 right-4 bg-black/50 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded-md font-bold">
-              1 / {shop.images.length}
-            </div>
-          )}
         </div>
 
         {/* Content Container */}
@@ -121,10 +131,7 @@ export default function ShopDetailView({
               </div>
               <div className="flex flex-wrap gap-1.5 mb-4">
                 {shop.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-[11px] font-bold text-gray-400"
-                  >
+                  <span key={tag} className="text-sm font-bold text-gray-400">
                     #{tag}
                   </span>
                 ))}
@@ -136,45 +143,83 @@ export default function ShopDetailView({
               <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 group hover:border-blue-200 transition-colors">
                 <div className="flex items-center gap-2 mb-2 text-gray-400">
                   <CreditCard className="w-4 h-4" />
-                  <span className="text-[11px] font-bold uppercase tracking-wider">
-                    Prices
+                  <span className="text-sm font-bold uppercase tracking-wider">
+                    가격
                   </span>
                 </div>
-                <div className="text-lg font-black text-gray-900">
-                  {shop.priceInfo || "별도 문의"}
+                <div className="text-lg font-black text-gray-900 line-clamp-1">
+                  {shop.prices && shop.prices.length > 0 ? (
+                    <span>
+                      {shop.prices[0].price}
+                      <span className="text-xs font-normal text-gray-400 ml-1">
+                        ({shop.prices[0].service_name})
+                      </span>
+                    </span>
+                  ) : (
+                    "별도 문의"
+                  )}
                 </div>
+                {shop.prices && shop.prices.length > 1 && (
+                  <button
+                    onClick={() => setIsPricesModalOpen(true)}
+                    className="mt-2 text-sm font-bold text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-0.5 cursor-pointer"
+                  >
+                    외 {shop.prices.length - 1}개 수선 항목 보기
+                    <ChevronRight className="w-2.5 h-2.5" />
+                  </button>
+                )}
               </div>
               <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 group hover:border-blue-200 transition-colors">
                 <div className="flex items-center gap-2 mb-2 text-gray-400">
                   <Clock className="w-4 h-4" />
-                  <span className="text-[11px] font-bold uppercase tracking-wider">
-                    Turnaround
+                  <span className="text-sm font-bold uppercase tracking-wider">
+                    소요 기간
                   </span>
                 </div>
                 <div className="text-lg font-black text-gray-900">
-                  {shop.duration || "약 2주"}
+                  {shop.turnaround?.text || "약 2주"}
                 </div>
+                {shop.turnaround?.source_url && (
+                  <a
+                    href={shop.turnaround.source_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-blue-500 hover:text-blue-700 transition-colors"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                    {shop.turnaround.source_text || "출처 확인"}
+                  </a>
+                )}
               </div>
               <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 group hover:border-blue-200 transition-colors">
                 <div className="flex items-center gap-2 mb-2 text-gray-400">
-                  <Zap className="w-4 h-4" />
-                  <span className="text-[11px] font-bold uppercase tracking-wider">
-                    Rubber
+                  <Clock className="w-4 h-4" />
+                  <span className="text-sm font-bold uppercase tracking-wider">
+                    절차
                   </span>
                 </div>
                 <div className="text-sm font-black text-gray-900 line-clamp-1">
-                  {shop.rubberInfo || "Vibram 전문"}
+                  {shop.process?.steps?.[0] || "택배/방문 가능"}
                 </div>
+                {shop.process?.steps && shop.process.steps.length > 1 && (
+                  <button
+                    onClick={() => setIsProcessModalOpen(true)}
+                    className="mt-2 text-sm font-bold text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-0.5 cursor-pointer"
+                  >
+                    외 {shop.process.steps.length - 1}단계 (자세히 보기)
+                    <ChevronRight className="w-2.5 h-2.5" />
+                  </button>
+                )}
               </div>
               <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 group hover:border-blue-200 transition-colors">
                 <div className="flex items-center gap-2 mb-2 text-gray-400">
-                  <Truck className="w-4 h-4" />
-                  <span className="text-[11px] font-bold uppercase tracking-wider">
-                    Delivery
+                  <MapPin className="w-4 h-4" />
+                  <span className="text-sm font-bold uppercase tracking-wider">
+                    영업시간
                   </span>
                 </div>
                 <div className="text-sm font-black text-gray-900">
-                  {shop.deliveryInfo || "택배 가능"}
+                  {getTodayHours()}
                 </div>
               </div>
             </div>
@@ -187,7 +232,7 @@ export default function ShopDetailView({
                     <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
                   </div>
                   <span className="text-xs font-black text-amber-700">
-                    사장님의 리솔 꿀팁
+                    리엣지의 추천 꿀팁
                   </span>
                 </div>
                 <h4 className="text-base font-bold text-gray-900 leading-snug mb-1">
@@ -200,10 +245,11 @@ export default function ShopDetailView({
                   추천 제품 보기 <ChevronRight className="w-3 h-3 ml-1" />
                 </div>
               </div>
-              <div className="w-24 h-24 bg-white rounded-2xl overflow-hidden shadow-sm shrink-0 p-2">
-                <img
-                  src="https://images.unsplash.com/photo-1556228578-8c7c2f971c91?q=80&w=200&auto=format&fit=crop"
-                  className="w-full h-full object-contain"
+              <div className="w-24 h-24 bg-white rounded-2xl overflow-hidden shadow-sm shrink-0 p-2 relative">
+                <Image
+                  src="https://images.unsplash.com/photo-1556228578-8c7c2f971c91"
+                  fill
+                  className="object-contain p-2"
                   alt="Product"
                 />
               </div>
@@ -314,10 +360,11 @@ export default function ShopDetailView({
                       },
                     ].map((item, i) => (
                       <div key={i} className="flex gap-4 group cursor-pointer">
-                        <div className="w-16 h-16 bg-gray-50 rounded-xl overflow-hidden p-2 shrink-0 group-hover:bg-blue-50 transition-colors">
-                          <img
+                        <div className="w-16 h-16 bg-gray-50 rounded-xl overflow-hidden shrink-0 group-hover:bg-blue-50 transition-colors relative">
+                          <Image
                             src={item.img}
-                            className="w-full h-full object-contain"
+                            fill
+                            className="object-contain p-2"
                             alt={item.name}
                           />
                         </div>
@@ -349,22 +396,129 @@ export default function ShopDetailView({
       </div>
 
       {/* Sticky Bottom Footer CTA ( 행동 영역 ) */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-md border-t border-gray-100 flex gap-3 z-50">
-        <button
-          onClick={copyAddress}
-          className="flex-1 flex items-center justify-center gap-2 bg-gray-50 text-gray-900 py-4 rounded-2xl text-sm font-black active:scale-95 transition-all border border-gray-100"
-        >
-          <Copy className="w-4 h-4" />
-          주소 복사
-        </button>
+      <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-gray-100 flex gap-3 z-30">
         <a
-          href={`tel:${shop.phone || ""}`}
-          className="flex-[1.5] flex items-center justify-center gap-2 bg-blue-600 text-white py-4 rounded-2xl text-sm font-black shadow-xl shadow-blue-100 active:scale-95 transition-all"
+          href={`tel:${shop.phone}`}
+          className="flex-1 bg-gray-900 text-white h-14 rounded-2xl flex items-center justify-center gap-2 font-black shadow-xl hover:bg-black transition-all active:scale-95"
         >
-          <Phone className="w-4 h-4 fill-current" />
-          전화 상담하기
+          <Phone className="w-5 h-5 fill-current" />
+          상세 상담 전화하기
         </a>
       </div>
+
+      {/* Process Detail Modal */}
+      {isProcessModalOpen && shop.process && (
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setIsProcessModalOpen(false)}
+          />
+          <div className="relative bg-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="p-6 border-b border-gray-50 flex items-center justify-between">
+              <div>
+                <h3 className="text-2xl font-black mb-2 text-gray-900">
+                  절차 안내(PROCESS)
+                </h3>
+                <p className="text-xl text-gray-400 font-bold uppercase tracking-wider">
+                  {shop.name}
+                </p>
+              </div>
+              <button
+                onClick={() => setIsProcessModalOpen(false)}
+                className="p-2 bg-gray-50 rounded-full text-gray-400 hover:text-gray-900 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6">
+              <div className="space-y-6">
+                {shop.process.steps.map((step, idx) => (
+                  <div key={idx} className="flex gap-4">
+                    <div className="flex-none w-6 h-6 bg-gray-900 text-white rounded-lg flex items-center justify-center text-xs font-black">
+                      {idx + 1}
+                    </div>
+                    <p className="text-sm font-bold text-gray-800 leading-relaxed pt-0.5">
+                      {step}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-gray-50">
+                <a
+                  href={shop.process.source_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center gap-2 font-black text-sm hover:bg-blue-100 transition-colors"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  {shop.process.source_text || "공식 접수 가이드 확인"}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Prices Detail Modal */}
+      {isPricesModalOpen && shop.prices && (
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setIsPricesModalOpen(false)}
+          />
+          <div className="relative bg-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="p-6 border-b border-gray-50 flex items-center justify-between">
+              <div>
+                <h3 className="text-2xl font-black mb-2 text-gray-900">
+                  수선 가격표(PRICES)
+                </h3>
+                <p className="text-xl text-gray-400 font-bold uppercase tracking-wider">
+                  {shop.name}
+                </p>
+              </div>
+              <button
+                onClick={() => setIsPricesModalOpen(false)}
+                className="p-2 bg-gray-50 rounded-full text-gray-400 hover:text-gray-900 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto max-h-[60vh]">
+              <div className="space-y-4">
+                {shop.prices.map((item, idx) => (
+                  <div key={idx} className="group">
+                    <div className="flex items-end justify-between gap-4 mb-1">
+                      <span className="text-base font-bold text-gray-800 shrink-0">
+                        {item.service_name}
+                      </span>
+                      <div className="flex-1 border-b border-dotted border-gray-200 mb-1.5 min-w-[20px]" />
+                      <span className="text-lg font-black text-blue-600 shrink-0">
+                        {item.price}
+                      </span>
+                    </div>
+                    {item.description && (
+                      <p className="text-xs font-bold text-gray-400">
+                        {item.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="p-6 bg-gray-50 border-t border-gray-100">
+              <p className="text-[11px] text-gray-400 font-bold leading-relaxed">
+                * 위 가격은 수선 업체의 공지 및 사용자 제보를 바탕으로
+                작성되었습니다. 실제 수선 부위나 신발 상태에 따라 차이가 발생할
+                수 있으므로, 정확한 견적은 업체 상담을 통해 확인해 주세요.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

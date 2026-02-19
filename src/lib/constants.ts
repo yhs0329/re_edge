@@ -1,6 +1,6 @@
 export interface Shop {
   id: string;
-  slug: string; // SEO용 슬러그 추가
+  slug: string;
   name: string;
   address: string;
   phone: string;
@@ -11,15 +11,33 @@ export interface Shop {
   lat: number;
   lng: number;
   notice: string;
-  business_hours?: any;
+  business_hours?: {
+    [key: string]: {
+      open: string;
+      close: string;
+      break?: string;
+      is_closed?: boolean;
+    };
+  };
   delivery_available?: boolean;
+  turnaround?: {
+    text: string;
+    source_text: string;
+    source_url: string;
+  };
+  process?: {
+    steps: string[];
+    source_text: string;
+    source_url: string;
+  };
+  prices?: {
+    service_name: string;
+    price: string;
+    description: string;
+  }[];
   // UI 호환성을 위한 선택적 필드 (추후 삭제 가능)
   rating?: number;
   reviews?: number;
-  priceInfo?: string;
-  duration?: string;
-  rubberInfo?: string;
-  deliveryInfo?: string;
 }
 
 export const SHOPS: Shop[] = [
