@@ -137,12 +137,7 @@ export default function ShopDetailView({
         On PC, this is the sticky header we had.
       */}
       <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-md px-5 py-3 border-b border-gray-100 flex items-center justify-between">
-        <div className="flex items-center gap-2 truncate">
-          <h2 className="text-lg font-bold text-gray-900 truncate">
-            {shop.name}
-          </h2>
-          <BadgeCheck className="w-5 h-5 text-blue-500 shrink-0" />
-        </div>
+        <div className="flex items-center gap-2 truncate"></div>
         <button
           onClick={onClose}
           className="p-2 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
@@ -185,8 +180,8 @@ export default function ShopDetailView({
         {/* Affiliate Disclosure Line */}
         <div className="px-5 md:px-8 pt-4 -mb-2">
           <p className="text-xs text-gray-700 font-bold leading-relaxed opacity-60">
-            본 페이지에서는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의
-            수수료를 제공받습니다.
+            쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를
+            제공받습니다.
           </p>
         </div>
 
@@ -205,15 +200,9 @@ export default function ShopDetailView({
                   </h1>
                   {shop.is_verified && (
                     <span className="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-black rounded flex items-center gap-1 border border-green-200/50 shrink-0">
-                      <BadgeCheck className="w-3 h-3" /> VERIFIED
+                      <BadgeCheck className="w-3 h-3" /> 사업주 인증됨
                     </span>
                   )}
-                </div>
-                <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-lg border border-yellow-100">
-                  <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                  <span className="font-black text-yellow-700">
-                    {shop.rating}
-                  </span>
                 </div>
               </div>
               <div className="flex flex-wrap gap-1.5 mb-6">
@@ -483,7 +472,7 @@ export default function ShopDetailView({
                     <div className="flex items-center gap-2 flex-1">
                       <a
                         href={`tel:${shop.phone}`}
-                        className="text-sm font-bold text-gray-900 border-b border-gray-200 hover:text-blue-600 hover:border-blue-600 transition-colors"
+                        className="text-sm font-bold text-gray-900 hover:text-blue-600 hover:border-blue-600 transition-colors"
                       >
                         {shop.phone}
                       </a>

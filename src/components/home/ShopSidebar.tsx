@@ -44,8 +44,8 @@ export default function ShopSidebar({
       <div className="flex flex-col h-full w-full">
         {/* Header & Filters */}
         <div className="p-4 border-b border-gray-100 shrink-0">
-          <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
-            전국 리솔 전문점{" "}
+          <h2 className="text-3xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+            전국 리솔 전문점
             <span className="text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md text-xs">
               {shops.length}
             </span>
@@ -89,7 +89,7 @@ export default function ShopSidebar({
                 <div className="flex items-center gap-1.5 mb-1">
                   <h3
                     className={clsx(
-                      "font-bold text-sm transition-colors truncate max-w-[140px]",
+                      "font-bold text-2xl transition-colors truncate max-w-[140px]",
                       selectedShopId === shop.slug
                         ? "text-blue-600"
                         : "text-gray-900 group-hover:text-blue-600",
@@ -97,25 +97,20 @@ export default function ShopSidebar({
                   >
                     {shop.name}
                   </h3>
-                  <span className="text-[10px] text-blue-500 font-medium">
+                  <span className="text-sm text-blue-500 font-medium">
                     리솔
                   </span>
                 </div>
 
-                <div className="flex items-center gap-1.5 text-[10px] text-gray-500 mb-2">
+                <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-2">
                   <span
                     className={clsx(
                       "font-bold",
                       shop.is_verified ? "text-green-600" : "text-gray-400",
                     )}
                   >
-                    {shop.is_verified ? "인증됨" : "미인증"}
+                    {shop.is_verified ? "사업주 인증됨" : ""}
                   </span>
-                  <span className="text-gray-300">•</span>
-                  <div className="flex items-center">
-                    <Star className="w-2.5 h-2.5 text-yellow-500 fill-current mr-0.5" />
-                    <span className="font-bold text-gray-700">0.0</span>
-                  </div>
                 </div>
 
                 {/* Narrow photos (2 cols) */}
