@@ -179,9 +179,9 @@ export default function ShopDetailView({
 
         {/* Affiliate Disclosure Line */}
         <div className="px-5 md:px-8 pt-4 -mb-2">
-          <p className="text-xs text-gray-700 font-bold leading-relaxed opacity-60">
-            쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를
-            제공받습니다.
+          <p className="text-xs text-gray-500 font-bold leading-relaxed opacity-60">
+            본 페이지는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의
+            수수료를 제공받습니다.
           </p>
         </div>
 
@@ -280,14 +280,14 @@ export default function ShopDetailView({
 
             {/* Zone 2: Quick Specs Grid (2x2) */}
             <div className="grid grid-cols-2 gap-3 mb-8">
-              <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 group hover:border-blue-200 transition-colors">
-                <div className="flex items-center gap-2 mb-2 text-gray-400">
-                  <CreditCard className="w-4 h-4" />
+              <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 group hover:border-blue-400/30 hover:bg-white hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300">
+                <div className="flex items-center gap-2 mb-2 text-gray-500 group-hover:text-blue-500 transition-colors">
+                  <CreditCard className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
                   <span className="text-sm font-bold uppercase tracking-wider">
                     가격
                   </span>
                 </div>
-                <div className="text-lg font-black text-gray-900 line-clamp-1">
+                <div className="text-lg font-bold text-gray-900 line-clamp-1">
                   {shop.prices && shop.prices.length > 0 ? (
                     <span>{shop.prices[0].price}</span>
                   ) : (
@@ -306,14 +306,14 @@ export default function ShopDetailView({
                   </button>
                 )}
               </div>
-              <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 group hover:border-blue-200 transition-colors">
-                <div className="flex items-center gap-2 mb-2 text-gray-400">
-                  <Clock className="w-4 h-4" />
+              <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 group hover:border-blue-400/30 hover:bg-white hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300">
+                <div className="flex items-center gap-2 mb-2 text-gray-500 group-hover:text-blue-500 transition-colors">
+                  <Clock className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
                   <span className="text-sm font-bold uppercase tracking-wider">
                     소요 기간
                   </span>
                 </div>
-                <div className="text-lg font-black text-gray-900">
+                <div className="text-lg font-bold text-gray-900">
                   {shop.turnaround?.text || "약 2주"}
                 </div>
                 {shop.turnaround?.source_url && (
@@ -328,14 +328,14 @@ export default function ShopDetailView({
                   </a>
                 )}
               </div>
-              <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 group hover:border-blue-200 transition-colors">
-                <div className="flex items-center gap-2 mb-2 text-gray-400">
-                  <Clock className="w-4 h-4" />
+              <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 group hover:border-blue-400/30 hover:bg-white hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300">
+                <div className="flex items-center gap-2 mb-2 text-gray-500 group-hover:text-blue-500 transition-colors">
+                  <Zap className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
                   <span className="text-sm font-bold uppercase tracking-wider">
                     수선 절차
                   </span>
                 </div>
-                <div className="text-sm font-black text-gray-900 line-clamp-1">
+                <div className="text-lg font-bold text-gray-900 line-clamp-1">
                   {shop.process?.steps?.[0] || "택배/방문 가능"}
                 </div>
                 {shop.process?.steps && shop.process.steps.length > 1 && (
@@ -348,14 +348,14 @@ export default function ShopDetailView({
                   </button>
                 )}
               </div>
-              <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 group hover:border-blue-200 transition-colors">
-                <div className="flex items-center gap-2 mb-2 text-gray-400">
-                  <MapPin className="w-4 h-4" />
+              <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 group hover:border-blue-400/30 hover:bg-white hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300">
+                <div className="flex items-center gap-2 mb-2 text-gray-500 group-hover:text-blue-500 transition-colors">
+                  <MapPin className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
                   <span className="text-sm font-bold uppercase tracking-wider">
                     영업시간
                   </span>
                 </div>
-                <div className="text-sm font-black text-gray-900 line-clamp-1">
+                <div className="text-lg font-bold text-gray-900 line-clamp-1">
                   {shop.business_hours?.text || "별도 문의"}
                 </div>
                 {shop.business_hours && (
@@ -384,33 +384,41 @@ export default function ShopDetailView({
                   href={bannerInfo.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mb-10 bg-orange-50/30 rounded-3xl p-6 border-2 border-orange-500/20 flex gap-5 items-center group cursor-pointer hover:shadow-lg hover:border-orange-500/40 transition-all"
+                  className="mb-10 bg-linear-to-br from-[#FFF8F3] to-white rounded-[32px] p-7 border border-orange-200/50 flex gap-6 items-center group cursor-pointer hover:shadow-2xl hover:shadow-orange-200/40 hover:-translate-y-1 transition-all duration-500"
                 >
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center">
-                        <Zap className="w-3.5 h-3.5 text-orange-600" />
+                    <div className="flex items-center gap-2.5 mb-3">
+                      <div className="w-8 h-8 rounded-xl bg-orange-500 flex items-center justify-center shadow-lg shadow-orange-200">
+                        <Zap className="w-4 h-4 text-white fill-current" />
                       </div>
-                      <span className="text-xs font-black text-orange-700">
-                        리엣지의 강력 추천 해결책
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest leading-none mb-1">
+                          Editor's Pick
+                        </span>
+                        <span className="text-xl font-black text-gray-900 tracking-tight">
+                          리엣지 강력 추천 아이템
+                        </span>
+                      </div>
                     </div>
-                    <h4 className="text-base font-bold text-gray-900 leading-snug mb-1">
-                      암벽화에 사탄 들리기 전에 관리하세요 👿
-                    </h4>
-                    <h4 className="text-base font-bold text-gray-900 leading-snug mb-4">
-                      클라이머 필수템, 할머니 가루 보러가기
-                    </h4>
-                    <div className="inline-flex items-center text-sm font-black bg-orange-500 text-white px-3 py-1.5 rounded-full shadow-lg shadow-orange-100 group-hover:bg-orange-600 transition-all">
-                      추천 제품 바로보기{" "}
-                      <ChevronRight className="w-3 h-3 ml-1" />
+                    <div className="space-y-1 mb-5">
+                      <p className="text-base font-bold text-slate-700 leading-snug">
+                        암벽화에 사탄 들리기 전에 관리하세요 👿
+                      </p>
+                      <p className="text-base font-medium text-slate-500 leading-snug">
+                        클라이머 필수템, 할머니 가루 보러가기
+                      </p>
+                    </div>
+                    <div className="inline-flex items-center text-sm font-black bg-gray-900 text-white px-5 py-2.5 rounded-2xl shadow-xl shadow-gray-200 group-hover:bg-orange-600 group-hover:shadow-orange-100 transition-all duration-300">
+                      추천 제품 바로보기
+                      <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
                     </div>
                   </div>
-                  <div className="w-24 h-24 bg-white rounded-2xl overflow-hidden shadow-sm shrink-0 p-2 relative">
+                  <div className="w-32 h-32 bg-white rounded-[24px] overflow-hidden shadow-xl shadow-orange-100/50 shrink-0 p-3 relative border border-orange-50/50">
+                    <div className="absolute inset-0 bg-linear-to-tr from-orange-50/30 to-transparent pointer-events-none" />
                     <Image
                       src={bannerInfo.src}
                       fill
-                      className="object-contain p-2"
+                      className="object-contain p-4 transition-transform duration-700 group-hover:scale-110"
                       alt="Product"
                     />
                   </div>
@@ -420,95 +428,117 @@ export default function ShopDetailView({
 
             {/* Zone 4: Details & Actions */}
             <div>
-              {/* Tab Navigation */}
-              <div className="flex border-b border-gray-100 mb-6 sticky top-[53px] bg-white/95 z-20">
+              {/* Tab Navigation (Pill Style) */}
+              <div className="flex p-1.5 bg-gray-100/50 rounded-2xl mb-8 sticky top-[53px] z-20 backdrop-blur-xl border border-gray-100">
                 <button
                   onClick={() => setActiveTab("info")}
                   className={clsx(
-                    "flex-1 py-4 text-sm font-black transition-all",
+                    "flex-1 py-3 text-sm font-bold transition-all duration-300 rounded-xl flex items-center justify-center gap-2",
                     activeTab === "info"
-                      ? "text-blue-600 border-b-2 border-blue-600"
-                      : "text-gray-400",
+                      ? "bg-white text-blue-600 shadow-sm shadow-blue-500/5 ring-1 ring-gray-100"
+                      : "text-gray-400 hover:text-gray-600",
                   )}
                 >
+                  <Info
+                    className={clsx(
+                      "w-4 h-4",
+                      activeTab === "info" ? "text-blue-500" : "text-gray-300",
+                    )}
+                  />
                   상세 정보
                 </button>
                 <button
                   onClick={() => setActiveTab("reviews")}
                   className={clsx(
-                    "flex-1 py-4 text-sm font-black transition-all",
+                    "flex-1 py-3 text-sm font-bold transition-all duration-300 rounded-xl flex items-center justify-center gap-2",
                     activeTab === "reviews"
-                      ? "text-blue-600 border-b-2 border-blue-600"
-                      : "text-gray-400",
+                      ? "bg-white text-blue-600 shadow-sm shadow-blue-500/5 ring-1 ring-gray-100"
+                      : "text-gray-400 hover:text-gray-600",
                   )}
                 >
+                  <MessageCircle
+                    className={clsx(
+                      "w-4 h-4",
+                      activeTab === "reviews"
+                        ? "text-blue-500"
+                        : "text-gray-300",
+                    )}
+                  />
                   리뷰 모아보기 ({shop.reviews})
                 </button>
               </div>
 
               {activeTab === "info" ? (
-                <div className="space-y-4 pt-2">
-                  <div className="flex py-4 border-b border-gray-50 group transition-colors hover:border-blue-100">
-                    <span className="text-xs text-gray-400 font-bold uppercase tracking-wide w-24 shrink-0 pt-0.5">
-                      주소
-                    </span>
-                    <div className="flex items-start gap-2 flex-1">
-                      <span className="text-sm font-bold text-gray-900 text-left break-keep">
-                        {shop.address}
-                      </span>
-                      <button
-                        onClick={copyAddress}
-                        className="p-1 hover:bg-gray-100 rounded-md text-gray-400 hover:text-blue-600 transition-colors shrink-0"
-                        title="주소 복사"
-                      >
-                        <Copy className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex py-4 border-b border-gray-50 group transition-colors hover:border-blue-100">
-                    <span className="text-xs text-gray-400 font-bold uppercase tracking-wide w-24 shrink-0 pt-0.5">
-                      연락처
-                    </span>
-                    <div className="flex items-center gap-2 flex-1">
-                      <a
-                        href={`tel:${shop.phone}`}
-                        className="text-sm font-bold text-gray-900 hover:text-blue-600 hover:border-blue-600 transition-colors"
-                      >
-                        {shop.phone}
-                      </a>
-                      <button
-                        onClick={copyPhone}
-                        className="p-1 hover:bg-gray-100 rounded-md text-gray-400 hover:text-blue-600 transition-colors shrink-0"
-                        title="전화번호 복사"
-                      >
-                        <Copy className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex py-4 border-b border-gray-50 group transition-colors hover:border-blue-100">
-                    <span className="text-xs text-gray-400 font-bold uppercase tracking-wide w-24 shrink-0 pt-0.5">
-                      특징
-                    </span>
-                    <span className="text-sm font-bold text-gray-900 text-left">
-                      {shop.tags.join(", ")}
-                    </span>
-                  </div>
-                  <div className="flex py-4 border-b border-gray-50 group transition-colors hover:border-blue-100">
-                    <span className="text-xs text-gray-400 font-bold uppercase tracking-wide w-24 shrink-0 pt-0.5">
-                      정보 확인일
-                    </span>
-                    <span className="text-sm font-bold text-gray-500">
-                      ✅{" "}
-                      {new Date(shop.last_verified_at).toLocaleDateString(
-                        "ko-KR",
-                        {
-                          year: "numeric",
-                          month: "2-digit",
-                          day: "2-digit",
-                        },
+                <div className="space-y-1 pt-2">
+                  {[
+                    {
+                      label: "주소",
+                      value: shop.address,
+                      icon: MapPin,
+                      action: copyAddress,
+                      actionIcon: Copy,
+                    },
+                    {
+                      label: "연락처",
+                      value: shop.phone,
+                      icon: Phone,
+                      action: copyPhone,
+                      actionIcon: Copy,
+                      isTel: true,
+                    },
+                    {
+                      label: "특징",
+                      value: shop.tags.join(", "),
+                      icon: Star,
+                    },
+                    {
+                      label: "정보 확인일",
+                      value: `✅ ${new Date(shop.last_verified_at).toLocaleDateString("ko-KR", { year: "numeric", month: "2-digit", day: "2-digit" })}`,
+                      icon: RefreshCw,
+                      isSpecial: true,
+                    },
+                  ].map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="group flex items-center py-5 border-b border-slate-50 transition-all duration-300"
+                    >
+                      <div className="w-10 h-10 bg-slate-50/50 rounded-xl flex items-center justify-center shrink-0 mr-4 group-hover:bg-blue-50 transition-colors">
+                        <item.icon className="w-4.5 h-4.5 text-slate-300 group-hover:text-blue-500 transition-colors" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 block">
+                          {item.label}
+                        </span>
+                        {item.isTel ? (
+                          <a
+                            href={`tel:${item.value}`}
+                            className="text-l font-bold text-slate-800 hover:text-blue-600 transition-colors block w-fit"
+                          >
+                            {item.value}
+                          </a>
+                        ) : (
+                          <span
+                            className={clsx(
+                              "text-l font-bold block truncate",
+                              item.isSpecial
+                                ? "text-blue-600/80"
+                                : "text-slate-800",
+                            )}
+                          >
+                            {item.value}
+                          </span>
+                        )}
+                      </div>
+                      {item.action && (
+                        <button
+                          onClick={item.action}
+                          className="p-2.5 ml-2 hover:bg-slate-50 rounded-xl text-slate-300 hover:text-blue-600 transition-all active:scale-90"
+                        >
+                          <item.actionIcon className="w-4 h-4" />
+                        </button>
                       )}
-                    </span>
-                  </div>
+                    </div>
+                  ))}
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -520,37 +550,46 @@ export default function ShopDetailView({
                       </p>
                     </div>
                   ) : reviewsData.length > 0 ? (
-                    <div className="space-y-4 py-2">
+                    <div className="grid grid-cols-1 gap-4 py-2">
                       {reviewsData.map((review) => (
                         <a
                           key={review.id}
                           href={review.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="block bg-white border border-gray-100 p-5 rounded-2xl hover:border-blue-200 hover:shadow-md transition-all group"
+                          className="block bg-white border border-gray-100 p-6 rounded-[24px] hover:border-blue-200 hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-0.5 transition-all duration-300 group relative overflow-hidden"
                         >
-                          <div className="flex justify-between items-start mb-3">
-                            <h6 className="text-base font-black text-gray-900 leading-tight group-hover:text-blue-600 transition-colors">
-                              {review.title}
-                            </h6>
-                            <ExternalLink className="w-4 h-4 text-gray-300 group-hover:text-blue-400 transition-colors shrink-0" />
+                          <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <div className="flex justify-between items-start mb-4">
+                            <div className="space-y-2 flex-1 pr-4">
+                              <h6 className="text-lg font-black text-gray-900 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
+                                {review.title}
+                              </h6>
+                              <div className="flex items-center gap-2">
+                                <div className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-black rounded-md border border-blue-100/50">
+                                  {review.source}
+                                </div>
+                                <span className="text-[11px] font-bold text-gray-400 tracking-tight">
+                                  {new Date(
+                                    review.created_at,
+                                  ).toLocaleDateString("ko-KR", {
+                                    year: "numeric",
+                                    month: "2-digit",
+                                    day: "2-digit",
+                                  })}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-300 group-hover:bg-blue-50 group-hover:text-blue-400 transition-all shrink-0">
+                              <ExternalLink className="w-5 h-5" />
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2 text-xs text-gray-400 font-bold">
-                            <span className="px-2 py-0.5 bg-gray-50 text-gray-500 rounded-md">
-                              {review.source}
-                            </span>
-                            <span>•</span>
-                            <span>{review.author}</span>
-                            <span>•</span>
-                            <span>
-                              {new Date(review.created_at).toLocaleDateString(
-                                "ko-KR",
-                                {
-                                  year: "numeric",
-                                  month: "2-digit",
-                                  day: "2-digit",
-                                },
-                              )}
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-black text-gray-500">
+                              {review.author[0]}
+                            </div>
+                            <span className="text-sm font-bold text-gray-600">
+                              {review.author}
                             </span>
                           </div>
                         </a>
