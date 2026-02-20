@@ -42,6 +42,7 @@ export interface Shop {
     naver?: string;
     [key: string]: string | undefined;
   };
+  region?: string;
   // UI 호환성을 위한 선택적 필드 (추후 삭제 가능)
   rating?: number;
   reviews?: number;

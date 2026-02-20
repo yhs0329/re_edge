@@ -13,6 +13,7 @@ import Image from "next/image";
 import ShopDetailView from "@/components/shop/ShopDetailView";
 import { Shop } from "@/lib/constants";
 import { useState, useRef, useEffect } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 interface ShopSidebarProps {
   selectedShopId: string | null; // 실제로는 슬러그가 전달됨
@@ -42,11 +43,14 @@ const REGIONS = [
 const FilterChip = ({
   label,
   active = false,
+  onClick,
 }: {
   label: string;
   active?: boolean;
+  onClick?: () => void;
 }) => (
   <button
+    onClick={onClick}
     className={clsx(
       "px-4 py-2 rounded-xl text-[11px] font-bold transition-all duration-300 border shrink-0 active:scale-95",
       active
@@ -66,8 +70,23 @@ export default function ShopSidebar({
   // ID 대신 slug로 검색
   const selectedShop = shops.find((s) => s.slug === selectedShopId);
   const [isRegionOpen, setIsRegionOpen] = useState(false);
-  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const selectedRegion = searchParams.get("region");
+
+  const handleRegionSelect = (region: string | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (region) {
+      params.set("region", region);
+    } else {
+      params.delete("region");
+    }
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    setIsRegionOpen(false);
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -112,9 +131,11 @@ export default function ShopSidebar({
           </div>
 
           <div className="flex gap-2 pb-1 relative">
-            <button onClick={() => setSelectedRegion(null)}>
-              <FilterChip label="전체" active={!selectedRegion} />
-            </button>
+            <FilterChip
+              label="전체"
+              active={!selectedRegion}
+              onClick={() => handleRegionSelect(null)}
+            />
 
             {/* Region Dropdown */}
             <div className="relative" ref={dropdownRef}>
@@ -149,10 +170,7 @@ export default function ShopSidebar({
                           ? "bg-blue-500 text-white"
                           : "text-slate-600 hover:bg-blue-50 hover:text-blue-600",
                       )}
-                      onClick={() => {
-                        setSelectedRegion(region);
-                        setIsRegionOpen(false);
-                      }}
+                      onClick={() => handleRegionSelect(region)}
                     >
                       {region}
                     </button>

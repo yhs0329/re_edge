@@ -21,6 +21,7 @@ import clsx from "clsx";
 import Image from "next/image";
 import { Shop, SHOPS } from "@/lib/constants";
 import ShopDetailView from "@/components/shop/ShopDetailView";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 interface ShopBottomSheetProps {
   selectedShopId: string | null; // 실제로는 슬러그가 전달됨
@@ -50,11 +51,14 @@ const REGIONS = [
 const FilterChip = ({
   label,
   active = false,
+  onClick,
 }: {
   label: string;
   active?: boolean;
+  onClick?: () => void;
 }) => (
   <button
+    onClick={onClick}
     className={clsx(
       "px-4 py-2 rounded-xl text-[11px] font-bold transition-all duration-300 border shrink-0 active:scale-95",
       active
@@ -73,11 +77,26 @@ export default function ShopBottomSheet({
 }: ShopBottomSheetProps & { shops: Shop[] }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isRegionOpen, setIsRegionOpen] = useState(false);
-  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const controls = useAnimation();
   const dragControls = useDragControls();
   const listRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const selectedRegion = searchParams.get("region");
+
+  const handleRegionSelect = (region: string | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (region) {
+      params.set("region", region);
+    } else {
+      params.delete("region");
+    }
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    setIsRegionOpen(false);
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -242,9 +261,11 @@ export default function ShopBottomSheet({
             </h2>
           </div>
           <div className="flex gap-2 pb-1 relative">
-            <button onClick={() => setSelectedRegion(null)}>
-              <FilterChip label="전체" active={!selectedRegion} />
-            </button>
+            <FilterChip
+              label="전체"
+              active={!selectedRegion}
+              onClick={() => handleRegionSelect(null)}
+            />
 
             {/* Region Dropdown */}
             <div className="relative" ref={dropdownRef}>
@@ -279,10 +300,7 @@ export default function ShopBottomSheet({
                           ? "bg-blue-500 text-white"
                           : "text-slate-600 hover:bg-blue-50 hover:text-blue-600",
                       )}
-                      onClick={() => {
-                        setSelectedRegion(region);
-                        setIsRegionOpen(false);
-                      }}
+                      onClick={() => handleRegionSelect(region)}
                     >
                       {region}
                     </button>
