@@ -34,20 +34,11 @@ export default function ShopDetailView({
   const [activeTab, setActiveTab] = useState<"info" | "reviews">("info");
   const [isProcessModalOpen, setIsProcessModalOpen] = useState(false);
   const [isPricesModalOpen, setIsPricesModalOpen] = useState(false);
+  const [isHoursModalOpen, setIsHoursModalOpen] = useState(false);
 
   const copyAddress = () => {
     navigator.clipboard.writeText(shop.address);
     alert("주소가 복사되었습니다.");
-  };
-
-  const getTodayHours = () => {
-    if (!shop.business_hours) return "별도 문의";
-    const days = ["일", "월", "화", "수", "목", "금", "토"];
-    const today = days[new Date().getDay()];
-    const hours = shop.business_hours[today];
-
-    if (!hours || hours.is_closed) return "오늘 휴무";
-    return `${hours.open} - ${hours.close}${hours.break ? ` (휴게 ${hours.break})` : ""}`;
   };
 
   return (
@@ -149,22 +140,19 @@ export default function ShopDetailView({
                 </div>
                 <div className="text-lg font-black text-gray-900 line-clamp-1">
                   {shop.prices && shop.prices.length > 0 ? (
-                    <span>
-                      {shop.prices[0].price}
-                      <span className="text-xs font-normal text-gray-400 ml-1">
-                        ({shop.prices[0].service_name})
-                      </span>
-                    </span>
+                    <span>{shop.prices[0].price}</span>
                   ) : (
                     "별도 문의"
                   )}
                 </div>
-                {shop.prices && shop.prices.length > 1 && (
+                {shop.prices && shop.prices.length > 0 && (
                   <button
                     onClick={() => setIsPricesModalOpen(true)}
                     className="mt-2 text-sm font-bold text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-0.5 cursor-pointer"
                   >
-                    외 {shop.prices.length - 1}개 수선 항목 보기
+                    {shop.prices.length > 1
+                      ? `외 ${shop.prices.length - 1}개 수선 항목 보기`
+                      : "수선 상세 정보 및 출처 확인"}
                     <ChevronRight className="w-2.5 h-2.5" />
                   </button>
                 )}
@@ -195,7 +183,7 @@ export default function ShopDetailView({
                 <div className="flex items-center gap-2 mb-2 text-gray-400">
                   <Clock className="w-4 h-4" />
                   <span className="text-sm font-bold uppercase tracking-wider">
-                    절차
+                    수선 절차
                   </span>
                 </div>
                 <div className="text-sm font-black text-gray-900 line-clamp-1">
@@ -218,9 +206,18 @@ export default function ShopDetailView({
                     영업시간
                   </span>
                 </div>
-                <div className="text-sm font-black text-gray-900">
-                  {getTodayHours()}
+                <div className="text-sm font-black text-gray-900 line-clamp-1">
+                  {shop.business_hours?.text || "별도 문의"}
                 </div>
+                {shop.business_hours && (
+                  <button
+                    onClick={() => setIsHoursModalOpen(true)}
+                    className="mt-2 text-sm font-bold text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-0.5 cursor-pointer"
+                  >
+                    상세 영업시간 보기
+                    <ChevronRight className="w-2.5 h-2.5" />
+                  </button>
+                )}
               </div>
             </div>
 
@@ -288,7 +285,7 @@ export default function ShopDetailView({
                   <div>
                     <h5 className="text-sm font-black text-gray-900 mb-3 flex items-center gap-2">
                       <div className="w-1.5 h-4 bg-blue-600 rounded-full" />
-                      사장님 한마디
+                      업체 정보 요약
                     </h5>
                     <div className="bg-gray-50 p-5 rounded-2xl text-sm text-gray-600 leading-relaxed italic border-l-4 border-gray-200">
                       "수십 년 경력의 장인이 직접 정성을 다해 수선합니다. 비브람
@@ -469,52 +466,192 @@ export default function ShopDetailView({
             onClick={() => setIsPricesModalOpen(false)}
           />
           <div className="relative bg-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="p-6 border-b border-gray-50 flex items-center justify-between">
-              <div>
-                <h3 className="text-2xl font-black mb-2 text-gray-900">
-                  수선 가격표(PRICES)
-                </h3>
-                <p className="text-xl text-gray-400 font-bold uppercase tracking-wider">
-                  {shop.name}
+            <div className="p-8 pb-6 border-b border-gray-100 flex items-start justify-between bg-white sticky top-0 z-10">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-3xl font-black text-gray-900 tracking-tight">
+                    수선 가격표
+                  </h3>
+                  <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-md font-black uppercase tracking-widest leading-none">
+                    PRICES
+                  </span>
+                </div>
+                <p className="text-sm font-bold text-gray-400">
+                  {shop.name}의 상세 수선 항목 및 예상 비용
                 </p>
               </div>
               <button
                 onClick={() => setIsPricesModalOpen(false)}
-                className="p-2 bg-gray-50 rounded-full text-gray-400 hover:text-gray-900 transition-colors"
+                className="p-2.5 bg-gray-50 rounded-2xl text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-all active:scale-95"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5.5 h-5.5" />
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto max-h-[60vh]">
-              <div className="space-y-4">
+            <div className="px-8 py-4 overflow-y-auto max-h-[60vh] scrollbar-hide">
+              <div className="divide-y divide-gray-100">
                 {shop.prices.map((item, idx) => (
-                  <div key={idx} className="group">
-                    <div className="flex items-end justify-between gap-4 mb-1">
-                      <span className="text-base font-bold text-gray-800 shrink-0">
-                        {item.service_name}
-                      </span>
-                      <div className="flex-1 border-b border-dotted border-gray-200 mb-1.5 min-w-[20px]" />
-                      <span className="text-lg font-black text-blue-600 shrink-0">
-                        {item.price}
-                      </span>
-                    </div>
-                    {item.description && (
-                      <p className="text-xs font-bold text-gray-400">
-                        {item.description}
-                      </p>
-                    )}
+                  <div
+                    key={idx}
+                    className="flex justify-between items-center py-5 group"
+                  >
+                    <span className="text-base font-bold text-gray-700 tracking-tight group-hover:text-gray-900 transition-colors">
+                      {item.service_name}
+                    </span>
+                    <span className="text-xl font-black text-blue-600 shrink-0 tabular-nums">
+                      {item.price}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="p-6 bg-gray-50 border-t border-gray-100">
-              <p className="text-[11px] text-gray-400 font-bold leading-relaxed">
-                * 위 가격은 수선 업체의 공지 및 사용자 제보를 바탕으로
-                작성되었습니다. 실제 수선 부위나 신발 상태에 따라 차이가 발생할
-                수 있으므로, 정확한 견적은 업체 상담을 통해 확인해 주세요.
-              </p>
+            <div className="p-8 bg-slate-50 border-t border-gray-100 space-y-6 rounded-b-3xl">
+              {/* 중복 제거된 출처 버튼들 */}
+              <div className="space-y-3">
+                {Array.from(
+                  new Set(
+                    shop.prices.map((p) => p.description).filter(Boolean),
+                  ),
+                ).map((desc, idx) => {
+                  const urlMatch = desc?.match(/https?:\/\/[^\s\)\]]+/);
+                  const url = urlMatch ? urlMatch[0] : null;
+                  const label = desc
+                    ?.replace(/[\(\[]?https?:\/\/[^\s\)\]]+[\)\]]?/g, "")
+                    .trim();
+
+                  return url ? (
+                    <a
+                      key={idx}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center gap-2 font-black text-sm hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-[0.98] group"
+                    >
+                      <ExternalLink className="w-4 h-4 transition-transform group-hover:scale-110" />
+                      출처: {label || "공식 사이트"}
+                    </a>
+                  ) : (
+                    <div
+                      key={idx}
+                      className="flex items-center gap-2 px-4 py-3 bg-white rounded-xl border border-gray-100 shadow-sm"
+                    >
+                      <Info className="w-3.5 h-3.5 text-blue-500" />
+                      <p className="text-[11px] text-gray-500 font-bold leading-relaxed">
+                        출처 : {desc}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="pt-2">
+                <p className="text-sm text-gray-400 font-bold leading-relaxed text-center opacity-80">
+                  * 위 가격은 수선 업체의 공지 및 사용자 제보를 바탕으로
+                  작성되었습니다.
+                  <br />
+                  실제 수선 부위나 신발 상태에 따라 차이가 발생할 수 있으므로,
+                  <br />
+                  정확한 견적은 업체 상담을 통해 확인해 주세요.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Business Hours Detail Modal */}
+      {isHoursModalOpen && shop.business_hours && (
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setIsHoursModalOpen(false)}
+          />
+          <div className="relative bg-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="p-8 pb-6 border-b border-gray-100 flex items-start justify-between bg-white sticky top-0 z-10">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-3xl font-black text-gray-900 tracking-tight">
+                    영업시간 상세
+                  </h3>
+                  <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-md font-black uppercase tracking-widest leading-none">
+                    HOURS
+                  </span>
+                </div>
+                <p className="text-sm font-bold text-gray-400">
+                  {shop.name}의 운영 시간 및 휴게 안내
+                </p>
+              </div>
+              <button
+                onClick={() => setIsHoursModalOpen(false)}
+                className="p-2.5 bg-gray-50 rounded-2xl text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-all active:scale-95"
+              >
+                <X className="w-5.5 h-5.5" />
+              </button>
+            </div>
+
+            <div className="px-8 py-8 overflow-y-auto max-h-[60vh] scrollbar-hide">
+              <div className="space-y-8">
+                {/* 메인 영업시간 */}
+                <div>
+                  <h5 className="text-[11px] font-black text-blue-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <Clock className="w-3.5 h-3.5" />
+                    운영 시간
+                  </h5>
+                  <p className="text-xl font-black text-gray-900 leading-tight whitespace-pre-wrap">
+                    {shop.business_hours.text}
+                  </p>
+                </div>
+
+                {/* 휴게시간 */}
+                {shop.business_hours.break_time && (
+                  <div>
+                    <h5 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                      <Zap className="w-3.5 h-3.5" />
+                      휴게 시간 (BREAK)
+                    </h5>
+                    <p className="text-base font-bold text-gray-700">
+                      {shop.business_hours.break_time}
+                    </p>
+                  </div>
+                )}
+
+                {/* 특이사항 */}
+                {shop.business_hours.details && (
+                  <div>
+                    <h5 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                      <Info className="w-3.5 h-3.5" />
+                      안내 및 특이사항
+                    </h5>
+                    <p className="text-sm font-bold text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-xl border border-gray-100">
+                      {shop.business_hours.details}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="p-8 bg-slate-50 border-t border-gray-100 space-y-4 rounded-b-3xl">
+              {shop.business_hours.link && (
+                <a
+                  href={shop.business_hours.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center gap-2 font-black text-sm hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-[0.98] group"
+                >
+                  <ExternalLink className="w-4 h-4 transition-transform group-hover:scale-110" />
+                  {shop.business_hours.link_text ||
+                    "공식 안내 확인하기 (영업 공지)"}
+                </a>
+              )}
+
+              <div className="pt-2">
+                <p className="text-sm text-gray-400 font-bold leading-relaxed text-center opacity-80">
+                  * 위 정보는 수선 업체의 공지 및 사용자 제보 등을 바탕으로
+                  작성되었습니다.
+                  <br />
+                  정기 휴무 및 공휴일 운영 여부는 방문 전 확인을 바랍니다.
+                </p>
+              </div>
             </div>
           </div>
         </div>

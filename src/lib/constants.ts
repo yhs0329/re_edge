@@ -12,12 +12,12 @@ export interface Shop {
   lng: number;
   notice: string;
   business_hours?: {
-    [key: string]: {
-      open: string;
-      close: string;
-      break?: string;
-      is_closed?: boolean;
-    };
+    text: string;
+    break_time?: string;
+    details?: string;
+    link?: string;
+    link_text?: string;
+    [key: string]: any;
   };
   delivery_available?: boolean;
   turnaround?: {
