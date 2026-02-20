@@ -133,53 +133,96 @@ export default function ShopDetailView({
   return (
     <div className="flex flex-col h-full bg-white relative">
       {/* 
-        Zone 0: Top Navigation (PC close only, Mobile might need back) 
-        On PC, this is the sticky header we had.
+        Zone 0 & 1: High-Density Typographic Header
+        사진 영역을 제거하고 정보를 최상단으로 압축하여 신뢰감 있는 디자인 구현
       */}
-      <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-md px-5 py-3 border-b border-gray-100 flex items-center justify-between">
-        <div className="flex items-center gap-2 truncate"></div>
-        <button
-          onClick={onClose}
-          className="p-2 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
-        >
-          <X className="w-5 h-5" />
-        </button>
+      <div className="sticky top-0 z-50 bg-blue-50/95 backdrop-blur-xl px-5 pt-8 pb-6 border-b border-blue-100/50">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex flex-col gap-2.5 max-w-[85%]">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight">
+                {shop.name}
+              </h1>
+              {shop.is_verified && (
+                <span className="px-2 py-0.5 bg-blue-600 text-white text-[10px] font-black rounded-md flex items-center gap-1 shadow-lg shadow-blue-500/20 shrink-0">
+                  <BadgeCheck className="w-3 h-3" /> 사업주 인증됨
+                </span>
+              )}
+            </div>
+
+            {/* Tags Row */}
+            <div className="flex flex-wrap gap-1.5">
+              {shop.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="text-[11px] font-black text-blue-600/70 bg-blue-100/50 px-2 py-0.5 rounded-lg border border-blue-200/30"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <button
+            onClick={onClose}
+            className="p-2.5 rounded-2xl bg-white text-slate-400 hover:text-slate-600 shadow-sm border border-blue-100/50 transition-all active:scale-95 shrink-0"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Social Links (Condensed Row) */}
+        {shop.social_links && Object.keys(shop.social_links).length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {shop.social_links.website && (
+              <a
+                href={shop.social_links.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-2.5 py-1 bg-white text-slate-600 border border-blue-100/50 rounded-lg text-[10px] font-black hover:bg-blue-50 transition-all shadow-xs"
+              >
+                <Globe className="w-3 h-3 text-blue-500" /> 웹사이트
+              </a>
+            )}
+            {shop.social_links.instagram && (
+              <a
+                href={shop.social_links.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-2.5 py-1 bg-white text-slate-600 border border-blue-100/50 rounded-lg text-[10px] font-black hover:bg-blue-50 transition-all shadow-xs"
+              >
+                <Instagram className="w-3 h-3 text-pink-500" /> 인스타
+              </a>
+            )}
+            {shop.social_links.blog && (
+              <a
+                href={shop.social_links.blog}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-2.5 py-1 bg-white text-slate-600 border border-blue-100/50 rounded-lg text-[10px] font-black hover:bg-blue-50 transition-all shadow-xs"
+              >
+                <span className="w-3 h-3 font-black text-[#03C75A]">B</span>{" "}
+                블로그
+              </a>
+            )}
+            {shop.social_links.naver && (
+              <a
+                href={shop.social_links.naver}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-2.5 py-1 bg-white text-slate-600 border border-blue-100/50 rounded-lg text-[10px] font-black hover:bg-blue-50 transition-all shadow-xs"
+              >
+                <MapPin className="w-3 h-3 text-[#03C75A]" /> 지도
+              </a>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto pb-24 scrollbar-hide text-slate-900">
-        {/* Zone 1: Hero Section (Compact Slider) */}
-        <div className="relative w-full overflow-hidden bg-gray-50 border-b border-gray-100">
-          {shop.images && shop.images.length > 0 ? (
-            <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide h-[200px] md:h-[180px]">
-              {shop.images.map((img: string, idx: number) => (
-                <div
-                  key={idx}
-                  className="flex-none w-full snap-start relative group"
-                >
-                  <Image
-                    src={img}
-                    alt={`${shop.name} view ${idx}`}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    priority={idx === 0}
-                  />
-                  <div className="absolute bottom-3 right-4 bg-black/40 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded-md font-bold z-10">
-                    {idx + 1} / {shop.images.length}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="h-[180px] flex items-center justify-center text-gray-400 font-bold flex-col gap-2 bg-gray-50">
-              <Info className="w-8 h-8 opacity-20" />
-              준비된 사진이 없습니다
-            </div>
-          )}
-        </div>
-
         {/* Affiliate Disclosure Line */}
-        <div className="px-5 md:px-8 pt-4 -mb-2">
-          <p className="text-xs text-gray-500 font-bold leading-relaxed opacity-60">
+        <div className="px-5 md:px-8 pt-6">
+          <p className="text-[10px] text-slate-400 font-bold leading-relaxed opacity-70">
             본 페이지는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의
             수수료를 제공받습니다.
           </p>
@@ -187,97 +230,13 @@ export default function ShopDetailView({
 
         {/* Content Container */}
         <div
-          className={clsx("p-5", !isMobile && "grid grid-cols-12 gap-8 px-8")}
+          className={clsx(
+            "p-5 pt-2",
+            !isMobile && "grid grid-cols-12 gap-8 px-8",
+          )}
         >
           {/* Main Column */}
           <div className={clsx(!isMobile ? "col-span-9" : "w-full")}>
-            {/* Title & Tags */}
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <h1 className="text-3xl font-black text-gray-900 tracking-tight">
-                    {shop.name}
-                  </h1>
-                  {shop.is_verified && (
-                    <span className="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-black rounded flex items-center gap-1 border border-green-200/50 shrink-0">
-                      <BadgeCheck className="w-3 h-3" /> 사업주 인증됨
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-1.5 mb-6">
-                {shop.tags.map((tag) => (
-                  <span key={tag} className="text-sm font-bold text-gray-400">
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-
-              {/* Social Links Buttons */}
-              {shop.social_links &&
-                Object.keys(shop.social_links).length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-8">
-                    {shop.social_links.website && (
-                      <a
-                        href={shop.social_links.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-3 py-1.5 bg-white text-slate-600 border border-slate-200 rounded-xl text-xs font-black hover:bg-slate-50 transition-all shadow-sm active:scale-95"
-                      >
-                        <Globe className="w-3 h-3 text-blue-500" />
-                        공식 홈페이지
-                      </a>
-                    )}
-                    {shop.social_links.kakao && (
-                      <a
-                        href={shop.social_links.kakao}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-3 py-1.5 bg-white text-slate-600 border border-slate-200 rounded-xl text-xs font-black hover:bg-slate-50 transition-all shadow-sm active:scale-95"
-                      >
-                        <MessageCircle className="w-3 h-3 text-yellow-500 fill-current" />
-                        카카오톡
-                      </a>
-                    )}
-                    {shop.social_links.instagram && (
-                      <a
-                        href={shop.social_links.instagram}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-3 py-1.5 bg-white text-slate-600 border border-slate-200 rounded-xl text-xs font-black hover:bg-slate-50 transition-all shadow-sm active:scale-95"
-                      >
-                        <Instagram className="w-3 h-3 text-pink-500" />
-                        인스타그램
-                      </a>
-                    )}
-                    {shop.social_links.blog && (
-                      <a
-                        href={shop.social_links.blog}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-3 py-1.5 bg-white text-slate-600 border border-slate-200 rounded-xl text-xs font-black hover:bg-slate-50 transition-all shadow-sm active:scale-95"
-                      >
-                        <span className="w-3 h-3 font-black italic flex items-center justify-center text-[#03C75A]">
-                          B
-                        </span>
-                        블로그
-                      </a>
-                    )}
-                    {shop.social_links.naver && (
-                      <a
-                        href={shop.social_links.naver}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-3 py-1.5 bg-white text-slate-600 border border-slate-200 rounded-xl text-xs font-black hover:bg-slate-50 transition-all shadow-sm active:scale-95"
-                      >
-                        <MapPin className="w-3 h-3 text-[#03C75A]" />
-                        네이버 지도
-                      </a>
-                    )}
-                  </div>
-                )}
-            </div>
-
             {/* Zone 2: Quick Specs Grid (2x2) */}
             <div className="grid grid-cols-2 gap-3 mb-8">
               <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 group hover:border-blue-400/30 hover:bg-white hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300">

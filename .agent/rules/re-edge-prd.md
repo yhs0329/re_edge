@@ -167,7 +167,7 @@ graph TD
 graph TD
     A[Mobile Screen Viewport]
     A --> B[Top Bar: Logo + Search Field]
-    A --> C[Background: Kakao Map Fullscreen]
+    A --> C[Background: Naver Map Fullscreen]
     C --> C1[Map Markers: Verified/Normal Pins]
     A --> D[Bottom Sheet: Swipeable List]
     D --> D1[Handle Bar]
