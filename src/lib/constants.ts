@@ -16,7 +16,6 @@ export interface Shop {
     break_time?: string;
     details?: string;
     link?: string;
-    link_text?: string;
     [key: string]: any;
   };
   delivery_available?: boolean;
@@ -35,9 +34,35 @@ export interface Shop {
     price: string;
     description: string;
   }[];
+  social_links?: {
+    website?: string;
+    instagram?: string;
+    kakao?: string;
+    blog?: string;
+    naver?: string;
+    [key: string]: string | undefined;
+  };
   // UI 호환성을 위한 선택적 필드 (추후 삭제 가능)
   rating?: number;
   reviews?: number;
+}
+
+export interface ShopReview {
+  id: string;
+  shop_id: string;
+  title: string;
+  author: string;
+  url: string;
+  source: string;
+  created_at: string;
+}
+
+export interface AffiliateProduct {
+  id: string;
+  location_key: string;
+  is_active: boolean;
+  click_count: number;
+  html_code: string;
 }
 
 export const SHOPS: Shop[] = [

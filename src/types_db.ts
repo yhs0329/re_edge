@@ -17,30 +17,24 @@ export type Database = {
       affiliate_products: {
         Row: {
           click_count: number | null
-          display_text: string | null
+          html_code: string | null
           id: string
-          image_url: string | null
           is_active: boolean | null
           location_key: string
-          target_link: string | null
         }
         Insert: {
           click_count?: number | null
-          display_text?: string | null
+          html_code?: string | null
           id?: string
-          image_url?: string | null
           is_active?: boolean | null
           location_key: string
-          target_link?: string | null
         }
         Update: {
           click_count?: number | null
-          display_text?: string | null
+          html_code?: string | null
           id?: string
-          image_url?: string | null
           is_active?: boolean | null
           location_key?: string
-          target_link?: string | null
         }
         Relationships: []
       }
@@ -150,6 +144,44 @@ export type Database = {
           },
         ]
       }
+      shop_reviews: {
+        Row: {
+          author: string
+          created_at: string | null
+          id: string
+          shop_id: string
+          source: string
+          title: string
+          url: string
+        }
+        Insert: {
+          author: string
+          created_at?: string | null
+          id?: string
+          shop_id: string
+          source: string
+          title: string
+          url: string
+        }
+        Update: {
+          author?: string
+          created_at?: string | null
+          id?: string
+          shop_id?: string
+          source?: string
+          title?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_shop_reviews_shop_id"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shops: {
         Row: {
           address: string | null
@@ -166,6 +198,7 @@ export type Database = {
           phone: string | null
           process: Json | null
           slug: string
+          social_links: Json | null
           tags: string[] | null
           turnaround: Json | null
         }
@@ -184,6 +217,7 @@ export type Database = {
           phone?: string | null
           process?: Json | null
           slug: string
+          social_links?: Json | null
           tags?: string[] | null
           turnaround?: Json | null
         }
@@ -202,6 +236,7 @@ export type Database = {
           phone?: string | null
           process?: Json | null
           slug?: string
+          social_links?: Json | null
           tags?: string[] | null
           turnaround?: Json | null
         }
@@ -552,6 +587,7 @@ export type Database = {
           phone: string
           process: Json
           slug: string
+          social_links: Json
           tags: string[]
           turnaround: Json
         }[]
