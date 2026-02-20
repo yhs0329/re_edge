@@ -1,15 +1,43 @@
 "use client";
 
-import { MapPin, Star, ChevronLeft, Search, Check } from "lucide-react";
+import {
+  MapPin,
+  Star,
+  ChevronLeft,
+  Search,
+  Check,
+  ChevronDown,
+} from "lucide-react";
 import clsx from "clsx";
 import Image from "next/image";
 import ShopDetailView from "@/components/shop/ShopDetailView";
 import { Shop } from "@/lib/constants";
+import { useState, useRef, useEffect } from "react";
 
 interface ShopSidebarProps {
   selectedShopId: string | null; // 실제로는 슬러그가 전달됨
   onSelectShop: (slug: string | null) => void;
 }
+
+const REGIONS = [
+  "서울",
+  "경기",
+  "인천",
+  "부산",
+  "대구",
+  "광주",
+  "대전",
+  "울산",
+  "세종",
+  "강원",
+  "충북",
+  "충남",
+  "전북",
+  "전남",
+  "경북",
+  "경남",
+  "제주",
+];
 
 const FilterChip = ({
   label,
@@ -37,6 +65,23 @@ export default function ShopSidebar({
 }: ShopSidebarProps & { shops: Shop[] }) {
   // ID 대신 slug로 검색
   const selectedShop = shops.find((s) => s.slug === selectedShopId);
+  const [isRegionOpen, setIsRegionOpen] = useState(false);
+  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsRegionOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <aside className="hidden md:flex h-full w-[20%] min-w-[320px] max-w-[400px] bg-white border-r border-gray-200 z-30 shadow-xl overflow-visible relative">
@@ -66,25 +111,69 @@ export default function ShopSidebar({
             />
           </div>
 
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            <FilterChip label="전체" active />
-            <FilterChip label="비브람" />
-            <FilterChip label="택배가능" />
-            <FilterChip label="영업중" />
+          <div className="flex gap-2 pb-1 relative">
+            <button onClick={() => setSelectedRegion(null)}>
+              <FilterChip label="전체" active={!selectedRegion} />
+            </button>
+
+            {/* Region Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setIsRegionOpen(!isRegionOpen)}
+                className={clsx(
+                  "px-4 py-2 rounded-xl text-[11px] font-bold transition-all duration-300 border shrink-0 flex items-center gap-1 active:scale-95",
+                  isRegionOpen || selectedRegion
+                    ? "bg-blue-50 text-blue-600 border-blue-200 shadow-sm"
+                    : "bg-white text-slate-500 border-slate-100 hover:border-blue-200 hover:text-blue-500",
+                  selectedRegion &&
+                    "bg-blue-600 text-white! border-blue-600 shadow-lg shadow-blue-500/20",
+                )}
+              >
+                {selectedRegion || "지역별"}
+                <ChevronDown
+                  className={clsx(
+                    "w-3 h-3 transition-transform duration-300",
+                    isRegionOpen && "rotate-180",
+                  )}
+                />
+              </button>
+
+              {isRegionOpen && (
+                <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-slate-100 rounded-2xl shadow-2xl p-3 z-50 grid grid-cols-4 gap-1 animate-in fade-in zoom-in duration-200">
+                  {REGIONS.map((region) => (
+                    <button
+                      key={region}
+                      className={clsx(
+                        "py-2 text-[10px] font-bold rounded-lg transition-colors",
+                        selectedRegion === region
+                          ? "bg-blue-500 text-white"
+                          : "text-slate-600 hover:bg-blue-50 hover:text-blue-600",
+                      )}
+                      onClick={() => {
+                        setSelectedRegion(region);
+                        setIsRegionOpen(false);
+                      }}
+                    >
+                      {region}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Shop List Items */}
-        <div className="flex-1 overflow-y-auto bg-slate-50/50 p-4 space-y-4 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto bg-slate-50/30 p-4 space-y-3 scrollbar-hide">
           {shops.map((shop) => (
             <div
               key={shop.id}
               onClick={() => onSelectShop(shop.slug)}
               className={clsx(
-                "p-4 rounded-[24px] border transition-all duration-300 cursor-pointer group relative overflow-hidden",
+                "p-5 rounded-[24px] border transition-all duration-300 cursor-pointer group relative overflow-hidden",
                 selectedShopId === shop.slug
-                  ? "bg-white border-blue-500 shadow-xl shadow-blue-500/10 -translate-y-1"
-                  : "bg-white border-slate-100 shadow-sm hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5",
+                  ? "bg-white border-blue-500 shadow-xl shadow-blue-500/10"
+                  : "bg-white border-slate-100 shadow-sm hover:border-blue-200 hover:shadow-md hover:shadow-blue-500/5",
               )}
             >
               {selectedShopId === shop.slug && (
@@ -94,10 +183,11 @@ export default function ShopSidebar({
               )}
 
               <div className="flex flex-col">
-                <div className="flex items-center gap-2 mb-1.5">
+                {/* Row 1: 상호명 & 인증 뱃지 */}
+                <div className="flex items-center flex-wrap gap-2 mb-2">
                   <h3
                     className={clsx(
-                      "font-black text-xl tracking-tight transition-colors truncate max-w-[150px]",
+                      "font-black text-lg tracking-tight transition-colors truncate max-w-[180px]",
                       selectedShopId === shop.slug
                         ? "text-blue-600"
                         : "text-slate-900 group-hover:text-blue-600",
@@ -105,54 +195,40 @@ export default function ShopSidebar({
                   >
                     {shop.name}
                   </h3>
-                  <div className="px-1.5 py-0.5 bg-slate-50 text-slate-400 text-[10px] font-black rounded-md border border-slate-100">
-                    리솔
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-1.5 text-xs mb-4">
                   {shop.is_verified && (
-                    <span className="flex items-center gap-1 px-2 py-0.5 bg-green-50 text-green-600 font-bold rounded-md border border-green-100/50">
-                      <svg viewBox="0 0 24 24" className="w-3 h-3 fill-current">
+                    <span className="flex items-center gap-1 px-1.5 py-0.5 bg-green-50 text-green-600 text-[10px] font-bold rounded-md border border-green-100/50 whitespace-nowrap">
+                      <svg
+                        viewBox="0 0 24 24"
+                        className="w-2.5 h-2.5 fill-current"
+                      >
                         <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                       </svg>
-                      사업주 인증됨
+                      인증됨
                     </span>
                   )}
                 </div>
 
-                {/* Photos or Premium Placeholder */}
-                <div className="grid grid-cols-2 gap-1.5 rounded-2xl overflow-hidden h-24 border border-slate-50/50 shadow-inner">
-                  {shop.images && shop.images.length > 0 ? (
-                    shop.images.slice(0, 2).map((img: string, idx: number) => (
-                      <div
-                        key={idx}
-                        className="relative aspect-square w-full bg-slate-100"
+                {/* Row 2: 주소 (모바일 일치) */}
+                <div className="flex items-start text-xs text-slate-700 font-bold mb-3">
+                  <MapPin className="w-3 h-3 mr-1 mt-0.5 shrink-0 text-blue-500/50" />
+                  <span className="line-clamp-1">{shop.address}</span>
+                </div>
+
+                {/* Row 3: 특징 태그 (최대 3개) */}
+                <div className="flex flex-wrap gap-1">
+                  {shop.tags &&
+                    shop.tags.slice(0, 3).map((tag, i) => (
+                      <span
+                        key={i}
+                        className="px-2 py-0.5 bg-slate-50 text-slate-500 text-[9px] font-black rounded-md border border-slate-100 uppercase tracking-tighter"
                       >
-                        <Image
-                          src={img}
-                          alt={`${shop.name} photo ${idx}`}
-                          fill
-                          sizes="(max-width: 768px) 50vw, 150px"
-                          className="object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                      </div>
-                    ))
-                  ) : (
-                    <div className="col-span-2 bg-linear-to-tr from-slate-50 to-slate-100/50 flex flex-col items-center justify-center relative overflow-hidden">
-                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-blue-500/5 via-transparent to-transparent opacity-50" />
-                      <div className="w-8 h-8 rounded-full bg-white/80 shadow-sm flex items-center justify-center mb-1 shadow-slate-200">
-                        <svg
-                          viewBox="0 0 24 24"
-                          className="w-4 h-4 text-slate-200 fill-current"
-                        >
-                          <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
-                        </svg>
-                      </div>
-                      <p className="text-[10px] text-slate-300 font-black tracking-widest uppercase">
-                        Preparing Photos
-                      </p>
-                    </div>
+                        {tag}
+                      </span>
+                    ))}
+                  {shop.tags && shop.tags.length > 3 && (
+                    <span className="text-[9px] text-slate-300 font-black ml-0.5 self-center">
+                      +{shop.tags.length - 3}
+                    </span>
                   )}
                 </div>
               </div>

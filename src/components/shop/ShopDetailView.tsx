@@ -401,10 +401,10 @@ export default function ShopDetailView({
                       </div>
                     </div>
                     <div className="space-y-1 mb-5">
-                      <p className="text-base font-bold text-slate-700 leading-snug">
+                      <p className="text-base font-normal text-slate-700 leading-snug">
                         암벽화에 사탄 들리기 전에 관리하세요 👿
                       </p>
-                      <p className="text-base font-medium text-slate-500 leading-snug">
+                      <p className="text-base font-normal text-slate-700 leading-snug">
                         클라이머 필수템, 할머니 가루 보러가기
                       </p>
                     </div>

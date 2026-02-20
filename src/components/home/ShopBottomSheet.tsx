@@ -27,6 +27,26 @@ interface ShopBottomSheetProps {
   onSelectShop: (slug: string | null) => void;
 }
 
+const REGIONS = [
+  "서울",
+  "경기",
+  "인천",
+  "부산",
+  "대구",
+  "광주",
+  "대전",
+  "울산",
+  "세종",
+  "강원",
+  "충북",
+  "충남",
+  "전북",
+  "전남",
+  "경북",
+  "경남",
+  "제주",
+];
+
 const FilterChip = ({
   label,
   active = false,
@@ -36,10 +56,10 @@ const FilterChip = ({
 }) => (
   <button
     className={clsx(
-      "px-3 py-1.5 rounded-full text-xs font-medium transition-colors border",
+      "px-4 py-2 rounded-xl text-[11px] font-bold transition-all duration-300 border shrink-0 active:scale-95",
       active
-        ? "bg-blue-600 text-white border-blue-600"
-        : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50",
+        ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-500/20"
+        : "bg-white text-slate-500 border-slate-100 hover:border-blue-200 hover:text-blue-500 hover:bg-blue-50/50",
     )}
   >
     {label}
@@ -52,9 +72,26 @@ export default function ShopBottomSheet({
   shops,
 }: ShopBottomSheetProps & { shops: Shop[] }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isRegionOpen, setIsRegionOpen] = useState(false);
+  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const controls = useAnimation();
   const dragControls = useDragControls();
   const listRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsRegionOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Sort shops so selected one appears first
   const sortedShops = useMemo(() => {
@@ -195,18 +232,64 @@ export default function ShopBottomSheet({
 
       {/* Header & Filters */}
       {!selectedShop && (
-        <div className="px-5 pb-4 border-b border-gray-100 shrink-0 bg-white relative">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-bold text-gray-900">
+        <div className="px-5 pb-5 border-b border-slate-100 shrink-0 bg-white relative">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-black text-slate-900 tracking-tight">
               내 주변 리솔샵{" "}
-              <span className="text-blue-600">{shops.length}</span>
+              <span className="text-blue-600 bg-blue-50 px-2 py-0.5 rounded-lg text-xs font-black border border-blue-100/50">
+                {shops.length}
+              </span>
             </h2>
           </div>
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            <FilterChip label="전체" active />
-            <FilterChip label="비브람" />
-            <FilterChip label="택배가능" />
-            <FilterChip label="영업중" />
+          <div className="flex gap-2 pb-1 relative">
+            <button onClick={() => setSelectedRegion(null)}>
+              <FilterChip label="전체" active={!selectedRegion} />
+            </button>
+
+            {/* Region Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setIsRegionOpen(!isRegionOpen)}
+                className={clsx(
+                  "px-4 py-2 rounded-xl text-[11px] font-bold transition-all duration-300 border shrink-0 flex items-center gap-1 active:scale-95",
+                  isRegionOpen || selectedRegion
+                    ? "bg-blue-50 text-blue-600 border-blue-200 shadow-sm"
+                    : "bg-white text-slate-500 border-slate-100 hover:border-blue-200 hover:text-blue-500",
+                  selectedRegion &&
+                    "bg-blue-600 text-white! border-blue-600 shadow-lg shadow-blue-500/20",
+                )}
+              >
+                {selectedRegion || "지역별"}
+                <ChevronDown
+                  className={clsx(
+                    "w-3 h-3 transition-transform duration-300",
+                    isRegionOpen && "rotate-180",
+                  )}
+                />
+              </button>
+
+              {isRegionOpen && (
+                <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-slate-100 rounded-2xl shadow-2xl p-3 z-50 grid grid-cols-4 gap-1 animate-in fade-in zoom-in duration-200">
+                  {REGIONS.map((region) => (
+                    <button
+                      key={region}
+                      className={clsx(
+                        "py-2 text-[10px] font-bold rounded-lg transition-colors",
+                        selectedRegion === region
+                          ? "bg-blue-500 text-white"
+                          : "text-slate-600 hover:bg-blue-50 hover:text-blue-600",
+                      )}
+                      onClick={() => {
+                        setSelectedRegion(region);
+                        setIsRegionOpen(false);
+                      }}
+                    >
+                      {region}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -236,87 +319,58 @@ export default function ShopBottomSheet({
                   key={shop.id}
                   onClick={() => onSelectShop(shop.slug)}
                   className={clsx(
-                    "bg-white p-5 rounded-2xl border transition-all active:scale-[0.98] duration-200",
+                    "bg-white p-5 rounded-[28px] border transition-all duration-300 active:scale-[0.97]",
                     selectedShopId === shop.slug
-                      ? "border-blue-500 shadow-md ring-1 ring-blue-500 bg-blue-50/10"
-                      : "border-gray-100 shadow-sm",
+                      ? "border-blue-500 shadow-xl shadow-blue-500/10 bg-blue-50/5 ring-1 ring-blue-500/20"
+                      : "border-slate-100 shadow-sm shadow-slate-200/50",
                   )}
                 >
-                  {/* Header: Title, Category, Status */}
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-bold text-lg text-gray-900 leading-tight truncate max-w-[180px]">
+                  {/* Header: Title, Category */}
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center flex-wrap gap-2 mb-2">
+                        <h3 className="font-black text-xl text-slate-900 tracking-tight truncate">
                           {shop.name}
                         </h3>
-                        <span className="text-[10px] text-blue-500 font-bold border border-blue-100 px-1 rounded whitespace-nowrap">
-                          리솔
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
-                        <span
-                          className={clsx(
-                            "font-bold",
-                            shop.is_verified
-                              ? "text-green-600"
-                              : "text-gray-400",
-                          )}
-                        >
-                          {shop.is_verified ? "영업중" : "준비중"}
-                        </span>
-                        <span className="text-gray-300">•</span>
-                        <div className="flex items-center">
-                          리뷰{" "}
-                          <span className="font-bold ml-1 text-gray-700">
-                            0
+                        {shop.is_verified && (
+                          <span className="flex items-center gap-1 px-1.5 py-0.5 bg-green-50 text-green-600 text-[10px] font-bold rounded-md border border-green-100/50 whitespace-nowrap">
+                            <svg
+                              viewBox="0 0 24 24"
+                              className="w-2.5 h-2.5 fill-current"
+                            >
+                              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                            </svg>
+                            인증됨
                           </span>
-                        </div>
-                        <span className="text-gray-300">•</span>
-                        <div className="flex items-center">
-                          <Star className="w-3 h-3 text-yellow-500 fill-current mr-0.5" />
-                          <span className="font-bold text-gray-700">0.0</span>
+                        )}
+                        <div className="px-1.5 py-0.5 bg-slate-50 text-slate-400 text-[10px] font-black rounded-md border border-slate-100 uppercase">
+                          리솔
                         </div>
                       </div>
 
-                      <div className="flex items-center text-xs text-gray-500 line-clamp-1 mb-3">
-                        <MapPin className="w-3 h-3 mr-1 shrink-0" />
+                      <div className="flex items-center text-xs text-slate-700 font-bold mb-3">
+                        <MapPin className="w-3.5 h-3.5 mr-1.5 text-blue-500/50" />
                         <span className="truncate">{shop.address}</span>
                       </div>
-                    </div>
-                  </div>
 
-                  {/* Photos Grid */}
-                  <div className="grid grid-cols-3 gap-1.5 rounded-xl overflow-hidden h-24 mb-3">
-                    {shop.images && shop.images.length > 0 ? (
-                      shop.images
-                        .slice(0, 3)
-                        .map((img: string, idx: number) => (
-                          <div
-                            key={idx}
-                            className="relative aspect-square w-full"
-                          >
-                            <Image
-                              src={img}
-                              alt={`${shop.name} photo ${idx}`}
-                              fill
-                              sizes="(max-width: 768px) 33vw, 100px"
-                              className="object-cover"
-                            />
-                            {idx === 2 && shop.images.length > 3 && (
-                              <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-[10px] font-bold">
-                                +{shop.images.length - 3}
-                              </div>
-                            )}
-                          </div>
-                        ))
-                    ) : (
-                      <div className="col-span-3 bg-gray-100 flex items-center justify-center rounded-xl">
-                        <p className="text-[10px] text-gray-400 font-bold">
-                          준비된 사진이 없습니다
-                        </p>
+                      {/* Row 3: 특징 태그 (최대 3개) */}
+                      <div className="flex flex-wrap gap-1">
+                        {shop.tags &&
+                          shop.tags.slice(0, 3).map((tag, i) => (
+                            <span
+                              key={i}
+                              className="px-2 py-0.5 bg-slate-50 text-slate-500 text-[9px] font-black rounded-md border border-slate-100 uppercase tracking-tighter"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        {shop.tags && shop.tags.length > 3 && (
+                          <span className="text-[9px] text-slate-300 font-black ml-0.5 self-center">
+                            +{shop.tags.length - 3}
+                          </span>
+                        )}
                       </div>
-                    )}
+                    </div>
                   </div>
                 </div>
               ))}
