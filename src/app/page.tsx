@@ -5,9 +5,9 @@ import MapSection from "@/components/home/MapSection";
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ region?: string; shop?: string }>;
+  searchParams: Promise<{ region?: string; shop?: string; q?: string }>;
 }) {
-  const { region: regionParam } = await searchParams;
+  const { region: regionParam, q: queryParam } = await searchParams;
 
   // 1. RPC 함수를 통해 위경도가 포함된 업체 목록을 서버에서 가져옵니다.
   const { data: shopsData } = await supabase.rpc("get_shops_with_coords");
@@ -33,7 +33,26 @@ export default async function Home({
       };
     })
     // 5. 서버 사이드 필터링 적용
-    .filter((shop) => !regionParam || shop.region === regionParam);
+    .filter((shop) => {
+      // 지역 필터
+      if (regionParam && shop.region !== regionParam) return false;
+
+      // 통합 검색 (상호명, 주소) - 띄어쓰기 무시
+      if (queryParam) {
+        const normalizedQuery = queryParam.replace(/\s+/g, "").toLowerCase();
+        const normalizedName = shop.name.replace(/\s+/g, "").toLowerCase();
+        const normalizedAddress = (shop.address || "")
+          .replace(/\s+/g, "")
+          .toLowerCase();
+
+        return (
+          normalizedName.includes(normalizedQuery) ||
+          normalizedAddress.includes(normalizedQuery)
+        );
+      }
+
+      return true;
+    });
 
   return (
     <main className="h-screen w-full overflow-y-scroll snap-y snap-mandatory scroll-smooth bg-slate-900">
