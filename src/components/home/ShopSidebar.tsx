@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import clsx from "clsx";
 import Image from "next/image";
-import ShopDetailView from "@/components/shop/ShopDetailView";
 import { Shop } from "@/lib/constants";
 import { useState, useRef, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
@@ -157,7 +156,7 @@ export default function ShopSidebar({
       <div className="flex flex-col h-full w-full">
         {/* Header & Filters */}
         <div className="p-5 border-b border-slate-100 shrink-0 bg-linear-to-b from-white to-slate-50/30">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4 mt-2">
             <h2 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
               전국 리솔 전문점
               <span className="text-blue-600 bg-blue-50 px-2 py-0.5 rounded-lg text-[10px] font-black border border-blue-100/50 shadow-sm shadow-blue-500/5">
@@ -249,6 +248,42 @@ export default function ShopSidebar({
 
         {/* Shop List Items */}
         <div className="flex-1 overflow-y-auto bg-slate-50/30 p-4 space-y-3 scrollbar-hide">
+          {/* Re:Edge Guide Card */}
+          <div
+            onClick={() => onSelectShop(null)}
+            className={clsx(
+              "p-5 rounded-[24px] border transition-all duration-300 cursor-pointer group relative overflow-hidden",
+              !selectedShopId
+                ? "bg-white border-blue-500 shadow-xl shadow-blue-500/10"
+                : "bg-white border-slate-100 shadow-sm hover:border-blue-200 hover:shadow-md hover:shadow-blue-500/5",
+            )}
+          >
+            {!selectedShopId && (
+              <div className="absolute top-0 right-0 p-1.5 bg-blue-500 rounded-bl-xl text-white">
+                <Check className="w-3 h-3 stroke-3" />
+              </div>
+            )}
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2 mb-2">
+                <h3
+                  className={clsx(
+                    "font-black text-lg tracking-tight transition-colors truncate",
+                    !selectedShopId
+                      ? "text-blue-600"
+                      : "text-slate-900 group-hover:text-blue-600",
+                  )}
+                >
+                  리엣지 가이드
+                </h3>
+                <span className="px-1.5 py-0.5 bg-orange-50 text-orange-600 text-[10px] font-bold rounded-md border border-orange-100/50">
+                  필독
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 font-bold line-clamp-1">
+                실패 없는 암벽화 수선을 위한 가이드
+              </p>
+            </div>
+          </div>
           {shops.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-[300px] text-center p-6 bg-white rounded-3xl border border-slate-100 shadow-sm border-dashed">
               <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-100">
@@ -345,24 +380,6 @@ export default function ShopSidebar({
             ))
           )}
         </div>
-      </div>
-
-      {/* Detail Panel (50% area) */}
-      <div
-        className={clsx(
-          "absolute top-16 bottom-4 left-[calc(100%+12px)] w-[50vw] bg-white rounded-2xl shadow-2xl border border-gray-100 transition-all duration-500 overflow-hidden",
-          selectedShopId
-            ? "opacity-100 translate-x-0"
-            : "opacity-0 -translate-x-4 pointer-events-none",
-        )}
-      >
-        {selectedShop && (
-          <ShopDetailView
-            shop={selectedShop}
-            onClose={() => onSelectShop(null)}
-            isMobile={false}
-          />
-        )}
       </div>
     </aside>
   );

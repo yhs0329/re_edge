@@ -1,16 +1,26 @@
-"use client";
+import { Map, List } from "lucide-react";
 
-import { Footprints } from "lucide-react";
-
-export default function FloatingActionButton() {
+export default function FloatingActionButton({
+  mode,
+  onClick,
+}: {
+  mode?: "LIST" | "MAP";
+  onClick?: () => void;
+}) {
   return (
     <button
-      className="absolute bottom-36 right-4 z-50 flex items-center justify-center p-4 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-4 focus:ring-blue-300 active:scale-95"
-      aria-label="My Gear"
+      onClick={onClick}
+      className="md:hidden absolute bottom-10 right-4 z-50 flex items-center justify-center px-5 py-3.5 bg-gray-900 text-white rounded-full shadow-2xl hover:bg-black transition-all focus:outline-none ring-offset-2 ring-gray-900 active:scale-95 border border-white/10"
+      aria-label={mode === "LIST" ? "지도 보기" : "목록 보기"}
     >
-      <Footprints className="w-6 h-6 fill-current" />
-      {/* Optional Label for larger screens or expanded state */}
-      {/* <span className="ml-2 font-bold">내 장비</span> */}
+      {mode === "LIST" ? (
+        <Map className="w-5 h-5 mr-2" />
+      ) : (
+        <List className="w-5 h-5 mr-2" />
+      )}
+      <span className="font-black text-sm tracking-tight">
+        {mode === "LIST" ? "지도 보기" : "목록 보기"}
+      </span>
     </button>
   );
 }

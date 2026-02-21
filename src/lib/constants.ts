@@ -73,9 +73,7 @@ export const SHOPS: Shop[] = [
     name: "슈마스터",
     address: "서울 성동구 성수이로 118",
     phone: "02-1234-5678",
-    images: [
-      "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=600&auto=format&fit=crop",
-    ],
+    images: [],
     tags: ["비브람공식", "택배전문", "성수동"],
     is_verified: true,
     last_verified_at: new Date().toISOString(),

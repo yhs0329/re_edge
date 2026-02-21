@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Shop, AffiliateProduct } from "@/lib/constants";
 import {
   X,
+  Check,
   MapPin,
   Star,
   Phone,
@@ -28,15 +29,17 @@ import { supabase } from "@/lib/supabase";
 import { ShopReview } from "@/lib/constants";
 
 interface ShopDetailViewProps {
-  shop: Shop;
+  shop?: Shop;
   onClose: () => void;
   isMobile?: boolean;
+  isGuide?: boolean;
 }
 
 export default function ShopDetailView({
   shop,
   onClose,
   isMobile = false,
+  isGuide = false,
 }: ShopDetailViewProps) {
   const [activeTab, setActiveTab] = useState<"info" | "reviews">("info");
   const [isProcessModalOpen, setIsProcessModalOpen] = useState(false);
@@ -70,7 +73,7 @@ export default function ShopDetailView({
         const { data: leftData, error: leftError } = await supabase
           .from("affiliate_products")
           .select("*")
-          .eq("location_key", "shop_detail_left_banner")
+          .eq("location_key", "shop_detail_body")
           .eq("is_active", true)
           .single();
 
@@ -98,6 +101,9 @@ export default function ShopDetailView({
   };
 
   useEffect(() => {
+    if (isGuide) return;
+    if (!shop) return;
+
     if (activeTab === "reviews" && reviewsData.length === 0) {
       const fetchReviews = async () => {
         setIsLoadingReviews(true);
@@ -118,14 +124,93 @@ export default function ShopDetailView({
       };
       fetchReviews();
     }
-  }, [activeTab, shop.id, reviewsData.length]);
+  }, [activeTab, shop?.id, reviewsData.length, isGuide]);
+
+  if (isGuide) {
+    return (
+      <div className="flex flex-col h-full bg-white relative">
+        <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl px-8 py-10 border-b border-slate-100">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-3.5">
+              <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight leading-none">
+                리엣지 가이드
+              </h1>
+              <span className="px-2 py-0.5 bg-orange-600 text-white text-[10px] font-bold rounded-md flex items-center gap-1 shadow-lg shadow-orange-500/20 shrink-0">
+                <Zap className="w-3 h-3" /> 필독 가이드
+              </span>
+            </div>
+            <p className="text-slate-500 font-bold">
+              암벽화 수선을 고민하는 클라이머를 위한 통합 안내서입니다.
+            </p>
+          </div>
+        </div>
+        <div className="flex-1 overflow-y-auto p-8 space-y-12 scrollbar-hide">
+          <section>
+            <h3 className="text-xl font-black text-slate-900 mb-4 flex items-center gap-2">
+              <span className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-sm">
+                1
+              </span>
+              수선 시기 확인법
+            </h3>
+            <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
+              <p className="text-slate-700 leading-relaxed font-medium">
+                암벽화의 고무가 얇아져서 랜드(본체 고무)가 보이기 시작하거나,
+                앞코가 벌어지기 시작하면 수선이 필요한 시점입니다. 너무 늦게
+                보내면 수선비가 추가될 수 있습니다.
+              </p>
+            </div>
+          </section>
+
+          <section>
+            <h3 className="text-xl font-black text-slate-900 mb-4 flex items-center gap-2">
+              <span className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-sm">
+                2
+              </span>
+              택배 접수 팁
+            </h3>
+            <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 space-y-4">
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2 text-slate-700 font-medium">
+                  <Check className="w-4 h-4 text-blue-500 mt-1 shrink-0" />
+                  <span>
+                    신발 안쪽에 성함, 연락처, 주소, 수선 요청사항을 적은 메모를
+                    꼭 넣어주세요.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2 text-slate-700 font-medium">
+                  <Check className="w-4 h-4 text-blue-500 mt-1 shrink-0" />
+                  <span>
+                    모래나 먼지를 털어서 보내주시면 작업 속도가 빨라집니다.
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          {/* Guide Item: Affiliate Banner */}
+          {leftBanner && (
+            <div className="pt-4">
+              <div
+                dangerouslySetInnerHTML={{ __html: leftBanner.html_code }}
+                className="flex justify-center"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (!shop) return null;
 
   const copyAddress = () => {
+    if (!shop) return;
     navigator.clipboard.writeText(shop.address);
     alert("주소가 복사되었습니다.");
   };
 
   const copyPhone = () => {
+    if (!shop) return;
     navigator.clipboard.writeText(shop.phone);
     alert("전화번호가 복사되었습니다.");
   };
@@ -136,93 +221,105 @@ export default function ShopDetailView({
         Zone 0 & 1: High-Density Typographic Header
         사진 영역을 제거하고 정보를 최상단으로 압축하여 신뢰감 있는 디자인 구현
       */}
-      <div className="sticky top-0 z-50 bg-blue-50/95 backdrop-blur-xl px-5 pt-8 pb-6 border-b border-blue-100/50">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex flex-col gap-2.5 max-w-[85%]">
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight">
+      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl px-5 md:px-8 py-10 border-b border-slate-100">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          {/* 좌측: Identity Group (상호명 및 해시태그) */}
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-3.5 flex-wrap">
+              <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-none">
                 {shop.name}
               </h1>
               {shop.is_verified && (
-                <span className="px-2 py-0.5 bg-blue-600 text-white text-[10px] font-black rounded-md flex items-center gap-1 shadow-lg shadow-blue-500/20 shrink-0">
+                <span className="px-2 py-0.5 bg-blue-600 text-white text-[10px] font-bold rounded-md flex items-center gap-1 shadow-lg shadow-blue-500/20 shrink-0">
                   <BadgeCheck className="w-3 h-3" /> 사업주 인증됨
                 </span>
+              )}
+
+              {/* Identity Group Social Links */}
+              {shop.social_links && (
+                <div className="flex items-center gap-2 ml-2">
+                  {shop.social_links.website && (
+                    <a
+                      href={shop.social_links.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-3 py-2 bg-transparent text-slate-700 rounded-md text-xs font-bold hover:bg-slate-100/80 transition-all active:scale-95 group"
+                      title="홈페이지"
+                    >
+                      <Globe className="w-4 h-4 text-blue-500" />
+                      <span className="hidden sm:inline">홈페이지</span>
+                    </a>
+                  )}
+                  {shop.social_links.instagram && (
+                    <a
+                      href={shop.social_links.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-3 py-2 bg-transparent text-slate-700 rounded-md text-xs font-bold hover:bg-slate-100/80 transition-all active:scale-95 group"
+                      title="인스타그램"
+                    >
+                      <Instagram className="w-4 h-4 text-pink-500" />
+                      <span className="hidden sm:inline">인스타그램</span>
+                    </a>
+                  )}
+                  {shop.social_links.blog && (
+                    <a
+                      href={shop.social_links.blog}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-3 py-2 bg-transparent text-slate-700 rounded-md text-xs font-bold hover:bg-slate-100/80 transition-all active:scale-95 group"
+                      title="네이버 블로그"
+                    >
+                      <div className="w-4 h-4 font-black text-[#03C75A] text-[10px] flex items-center justify-center border border-[#03C75A]/20 rounded-xs">
+                        B
+                      </div>
+                      <span className="hidden sm:inline">블로그</span>
+                    </a>
+                  )}
+                  {shop.social_links.naver && (
+                    <a
+                      href={shop.social_links.naver}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-3 py-2 bg-transparent text-slate-700 rounded-md text-xs font-bold hover:bg-slate-100/80 transition-all active:scale-95 group"
+                      title="네이버 지도"
+                    >
+                      <MapPin className="w-4 h-4 text-[#03C75A]" />
+                      <span className="hidden sm:inline">네이버 지도</span>
+                    </a>
+                  )}
+                </div>
               )}
             </div>
 
             {/* Tags Row */}
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-2">
               {shop.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="text-[11px] font-black text-blue-600/70 bg-blue-100/50 px-2 py-0.5 rounded-lg border border-blue-200/30"
+                  className="text-xs font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full"
                 >
                   #{tag}
                 </span>
               ))}
             </div>
           </div>
-
-          <button
-            onClick={onClose}
-            className="p-2.5 rounded-2xl bg-white text-slate-400 hover:text-slate-600 shadow-sm border border-blue-100/50 transition-all active:scale-95 shrink-0"
-          >
-            <X className="w-5 h-5" />
-          </button>
         </div>
 
-        {/* Social Links (Condensed Row) */}
-        {shop.social_links && Object.keys(shop.social_links).length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {shop.social_links.website && (
-              <a
-                href={shop.social_links.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-2.5 py-1 bg-white text-slate-600 border border-blue-100/50 rounded-lg text-[10px] font-black hover:bg-blue-50 transition-all shadow-xs"
-              >
-                <Globe className="w-3 h-3 text-blue-500" /> 웹사이트
-              </a>
-            )}
-            {shop.social_links.instagram && (
-              <a
-                href={shop.social_links.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-2.5 py-1 bg-white text-slate-600 border border-blue-100/50 rounded-lg text-[10px] font-black hover:bg-blue-50 transition-all shadow-xs"
-              >
-                <Instagram className="w-3 h-3 text-pink-500" /> 인스타
-              </a>
-            )}
-            {shop.social_links.blog && (
-              <a
-                href={shop.social_links.blog}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-2.5 py-1 bg-white text-slate-600 border border-blue-100/50 rounded-lg text-[10px] font-black hover:bg-blue-50 transition-all shadow-xs"
-              >
-                <span className="w-3 h-3 font-black text-[#03C75A]">B</span>{" "}
-                블로그
-              </a>
-            )}
-            {shop.social_links.naver && (
-              <a
-                href={shop.social_links.naver}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-2.5 py-1 bg-white text-slate-600 border border-blue-100/50 rounded-lg text-[10px] font-black hover:bg-blue-50 transition-all shadow-xs"
-              >
-                <MapPin className="w-3 h-3 text-[#03C75A]" /> 지도
-              </a>
-            )}
-          </div>
-        )}
+        {/* Floating Close Button (Top Right Inside Header Container) */}
+        <button
+          onClick={onClose}
+          className="absolute top-6 right-6 md:top-8 md:right-8 p-3 rounded-full bg-white text-slate-400 border border-slate-200 shadow-sm hover:bg-slate-50 hover:text-slate-600 hover:border-slate-300 transition-all active:scale-95 z-60"
+          title="닫기"
+        >
+          <X className="w-5 h-5" />
+        </button>
       </div>
 
       <div className="flex-1 overflow-y-auto pb-24 scrollbar-hide text-slate-900">
         {/* Affiliate Disclosure Line */}
         <div className="px-5 md:px-8 pt-6">
-          <p className="text-[10px] text-slate-400 font-bold leading-relaxed opacity-70">
+          <p className="text-sm text-slate-400 font-bold leading-relaxed opacity-70">
             본 페이지는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의
             수수료를 제공받습니다.
           </p>
@@ -237,153 +334,165 @@ export default function ShopDetailView({
         >
           {/* Main Column */}
           <div className={clsx(!isMobile ? "col-span-9" : "w-full")}>
-            {/* Zone 2: Quick Specs Grid (2x2) */}
-            <div className="grid grid-cols-2 gap-3 mb-8">
-              <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 group hover:border-blue-400/30 hover:bg-white hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300">
-                <div className="flex items-center gap-2 mb-2 text-gray-500 group-hover:text-blue-500 transition-colors">
-                  <CreditCard className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
-                  <span className="text-sm font-bold uppercase tracking-wider">
-                    가격
+            {/* Zone 2: Fast Specs Grid (Invoice Style 2x2) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 mb-12 border-t border-slate-100">
+              {/* Item: Price */}
+              <div className="group relative py-8 flex flex-col md:flex-row md:items-start gap-2 md:gap-4 border-b border-slate-100 md:border-r md:pr-6 hover:bg-slate-50/50 hover:scale-[1.02] hover:z-10 hover:shadow-2xl hover:shadow-slate-200/40 transition-all duration-300 cursor-default">
+                <div className="flex items-center gap-3 text-slate-400 md:w-28 shrink-0 py-1 transition-colors group-hover:text-blue-500">
+                  <CreditCard className="w-5 h-5 shrink-0 transition-transform group-hover:scale-110" />
+                  <span className="text-[13px] font-bold uppercase tracking-widest whitespace-nowrap">
+                    수선 가격
                   </span>
                 </div>
-                <div className="text-lg font-bold text-gray-900 line-clamp-1">
-                  {shop.prices && shop.prices.length > 0 ? (
-                    <span>{shop.prices[0].price}</span>
-                  ) : (
-                    "별도 문의"
+                <div className="flex flex-col items-start min-w-0">
+                  <div className="text-xl font-black text-slate-900 truncate w-full group-hover:text-blue-600 transition-colors">
+                    {shop.prices && shop.prices.length > 0 ? (
+                      <span>{shop.prices[0].price}</span>
+                    ) : (
+                      "별도 문의"
+                    )}
+                  </div>
+                  {shop.prices && shop.prices.length > 0 && (
+                    <button
+                      onClick={() => setIsPricesModalOpen(true)}
+                      className="mt-2 text-xs font-bold text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-1 cursor-pointer text-left"
+                    >
+                      {shop.prices.length > 1
+                        ? `외 ${shop.prices.length - 1}개 상세 가격표 보기`
+                        : "수선 상세 정보 및 출처 확인"}
+                      <ChevronRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
+                    </button>
                   )}
                 </div>
-                {shop.prices && shop.prices.length > 0 && (
-                  <button
-                    onClick={() => setIsPricesModalOpen(true)}
-                    className="mt-2 text-sm font-bold text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-0.5 cursor-pointer"
-                  >
-                    {shop.prices.length > 1
-                      ? `외 ${shop.prices.length - 1}개 수선 항목 보기`
-                      : "수선 상세 정보 및 출처 확인"}
-                    <ChevronRight className="w-2.5 h-2.5" />
-                  </button>
-                )}
               </div>
-              <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 group hover:border-blue-400/30 hover:bg-white hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300">
-                <div className="flex items-center gap-2 mb-2 text-gray-500 group-hover:text-blue-500 transition-colors">
-                  <Clock className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
-                  <span className="text-sm font-bold uppercase tracking-wider">
+
+              {/* Item: Turnaround */}
+              <div className="group relative py-8 flex flex-col md:flex-row md:items-start gap-2 md:gap-4 border-b border-slate-100 md:pl-6 hover:bg-slate-50/50 hover:scale-[1.02] hover:z-10 hover:shadow-2xl hover:shadow-slate-200/40 transition-all duration-300 cursor-default">
+                <div className="flex items-center gap-3 text-slate-400 md:w-28 shrink-0 py-1 transition-colors group-hover:text-blue-500">
+                  <Clock className="w-5 h-5 shrink-0 transition-transform group-hover:rotate-12" />
+                  <span className="text-[13px] font-bold uppercase tracking-widest whitespace-nowrap">
                     소요 기간
                   </span>
                 </div>
-                <div className="text-lg font-bold text-gray-900">
-                  {shop.turnaround?.text || "약 2주"}
+                <div className="flex flex-col items-start min-w-0">
+                  <div className="text-xl font-black text-slate-900 truncate w-full group-hover:text-blue-600 transition-colors">
+                    {shop.turnaround?.text || "약 2주"}
+                  </div>
+                  {shop.turnaround?.source_url && (
+                    <a
+                      href={shop.turnaround.source_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-blue-500 hover:text-blue-700 transition-colors"
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      {shop.turnaround.source_text || "출처 확인"}
+                    </a>
+                  )}
                 </div>
-                {shop.turnaround?.source_url && (
-                  <a
-                    href={shop.turnaround.source_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-blue-500 hover:text-blue-700 transition-colors"
-                  >
-                    <ExternalLink className="w-3 h-3" />
-                    {shop.turnaround.source_text || "출처 확인"}
-                  </a>
-                )}
               </div>
-              <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 group hover:border-blue-400/30 hover:bg-white hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300">
-                <div className="flex items-center gap-2 mb-2 text-gray-500 group-hover:text-blue-500 transition-colors">
-                  <Zap className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
-                  <span className="text-sm font-bold uppercase tracking-wider">
+
+              {/* Item: Process */}
+              <div className="group relative py-8 flex flex-col md:flex-row md:items-start gap-2 md:gap-4 border-b border-slate-100 md:border-r md:pr-6 hover:bg-slate-50/50 hover:scale-[1.02] hover:z-10 hover:shadow-2xl hover:shadow-slate-200/40 transition-all duration-300 cursor-default">
+                <div className="flex items-center gap-3 text-slate-400 md:w-28 shrink-0 py-1 transition-colors group-hover:text-blue-500">
+                  <Zap className="w-5 h-5 shrink-0 transition-transform group-hover:scale-110" />
+                  <span className="text-[13px] font-bold uppercase tracking-widest whitespace-nowrap">
                     수선 절차
                   </span>
                 </div>
-                <div className="text-lg font-bold text-gray-900 line-clamp-1">
-                  {shop.process?.steps?.[0] || "택배/방문 가능"}
+                <div className="flex flex-col items-start min-w-0">
+                  <div className="text-xl font-black text-slate-900 line-clamp-1 group-hover:text-blue-600 transition-colors">
+                    {shop.process?.steps?.[0] || "택배/방문 가능"}
+                  </div>
+                  {shop.process?.steps && shop.process.steps.length > 1 && (
+                    <button
+                      onClick={() => setIsProcessModalOpen(true)}
+                      className="mt-2 text-xs font-bold text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-1 cursor-pointer text-left"
+                    >
+                      외 {shop.process.steps.length - 1}단계 상세 절차 확인
+                      <ChevronRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
+                    </button>
+                  )}
                 </div>
-                {shop.process?.steps && shop.process.steps.length > 1 && (
-                  <button
-                    onClick={() => setIsProcessModalOpen(true)}
-                    className="mt-2 text-sm font-bold text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-0.5 cursor-pointer"
-                  >
-                    외 {shop.process.steps.length - 1}단계 (자세히 보기)
-                    <ChevronRight className="w-2.5 h-2.5" />
-                  </button>
-                )}
               </div>
-              <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 group hover:border-blue-400/30 hover:bg-white hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300">
-                <div className="flex items-center gap-2 mb-2 text-gray-500 group-hover:text-blue-500 transition-colors">
-                  <MapPin className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
-                  <span className="text-sm font-bold uppercase tracking-wider">
+
+              {/* Item: Hours */}
+              <div className="group relative py-8 flex flex-col md:flex-row md:items-start gap-2 md:gap-4 border-b border-slate-100 md:pl-6 hover:bg-slate-50/50 hover:scale-[1.02] hover:z-10 hover:shadow-2xl hover:shadow-slate-200/40 transition-all duration-300 cursor-default">
+                <div className="flex items-center gap-3 text-slate-400 md:w-28 shrink-0 py-1 transition-colors group-hover:text-blue-500">
+                  <MapPin className="w-5 h-5 shrink-0 transition-transform group-hover:scale-110" />
+                  <span className="text-[13px] font-bold uppercase tracking-widest whitespace-nowrap">
                     영업시간
                   </span>
                 </div>
-                <div className="text-lg font-bold text-gray-900 line-clamp-1">
-                  {shop.business_hours?.text || "별도 문의"}
+                <div className="flex flex-col items-start min-w-0">
+                  <div className="text-xl font-black text-slate-900 line-clamp-1 group-hover:text-blue-600 transition-colors">
+                    {shop.business_hours?.text || "별도 문의"}
+                  </div>
+                  {shop.business_hours && (
+                    <button
+                      onClick={() => setIsHoursModalOpen(true)}
+                      className="mt-2 text-xs font-bold text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-1 cursor-pointer text-left"
+                    >
+                      상세 영업시간 및 휴무일 보기
+                      <ChevronRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
+                    </button>
+                  )}
                 </div>
-                {shop.business_hours && (
-                  <button
-                    onClick={() => setIsHoursModalOpen(true)}
-                    className="mt-2 text-sm font-bold text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-0.5 cursor-pointer"
-                  >
-                    상세 영업시간 보기
-                    <ChevronRight className="w-2.5 h-2.5" />
-                  </button>
-                )}
               </div>
             </div>
 
             {/* Zone 3: Native Affiliate Card (Soft style) */}
-            {(() => {
-              const bannerInfo = leftBanner
-                ? parseAffiliateHtml(leftBanner.html_code)
-                : {
-                    href: "https://link.coupang.com/a/dPySn0",
-                    src: "https://images.unsplash.com/photo-1556228578-8c7c2f971c91",
-                  };
+            {leftBanner &&
+              (() => {
+                const bannerInfo = parseAffiliateHtml(leftBanner.html_code);
 
-              return (
-                <a
-                  href={bannerInfo.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mb-10 bg-linear-to-br from-[#FFF8F3] to-white rounded-[32px] p-7 border border-orange-200/50 flex gap-6 items-center group cursor-pointer hover:shadow-2xl hover:shadow-orange-200/40 hover:-translate-y-1 transition-all duration-500"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2.5 mb-3">
-                      <div className="w-8 h-8 rounded-xl bg-orange-500 flex items-center justify-center shadow-lg shadow-orange-200">
-                        <Zap className="w-4 h-4 text-white fill-current" />
+                return (
+                  <a
+                    href={bannerInfo.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mb-10 bg-linear-to-br from-[#FFF8F3] to-white rounded-[32px] p-7 border border-orange-200/50 flex gap-6 items-center group cursor-pointer hover:shadow-2xl hover:shadow-orange-200/40 hover:-translate-y-1 transition-all duration-500"
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2.5 mb-3">
+                        <div className="w-8 h-8 rounded-xl bg-orange-500 flex items-center justify-center shadow-lg shadow-orange-200">
+                          <Zap className="w-4 h-4 text-white fill-current" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest leading-none mb-1">
+                            Editor's Pick
+                          </span>
+                          <span className="text-xl font-black text-gray-900 tracking-tight">
+                            리엣지 강력 추천 아이템
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex flex-col">
-                        <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest leading-none mb-1">
-                          Editor's Pick
-                        </span>
-                        <span className="text-xl font-black text-gray-900 tracking-tight">
-                          리엣지 강력 추천 아이템
-                        </span>
+                      {/* 배너 정보가 있을 경우 제목이나 설명을 html에서 파싱하거나 기본 문구 사용 */}
+                      <div className="space-y-1 mb-5">
+                        <p className="text-base font-normal text-slate-700 leading-snug">
+                          암벽화에 사탄 들리기 전에 관리하세요!👿
+                        </p>
+                        <p className="text-base font-normal text-slate-700 leading-snug">
+                          클라이머 필수템, 할머니 가루 보러가기
+                        </p>
+                      </div>
+                      <div className="inline-flex items-center text-sm font-black bg-gray-900 text-white px-5 py-2.5 rounded-2xl shadow-xl shadow-gray-200 group-hover:bg-orange-600 group-hover:shadow-orange-100 transition-all duration-300">
+                        추천 상품 보러가기
+                        <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
                       </div>
                     </div>
-                    <div className="space-y-1 mb-5">
-                      <p className="text-base font-normal text-slate-700 leading-snug">
-                        암벽화에 사탄 들리기 전에 관리하세요 👿
-                      </p>
-                      <p className="text-base font-normal text-slate-700 leading-snug">
-                        클라이머 필수템, 할머니 가루 보러가기
-                      </p>
+
+                    <div className="w-36 h-36 relative shrink-0 rounded-2xl overflow-hidden shadow-inner border border-orange-100 bg-white p-2">
+                      <Image
+                        src={bannerInfo.src}
+                        fill
+                        className="object-contain group-hover:scale-110 transition-transform duration-700"
+                        alt="Re:Edge Pick"
+                      />
                     </div>
-                    <div className="inline-flex items-center text-sm font-black bg-gray-900 text-white px-5 py-2.5 rounded-2xl shadow-xl shadow-gray-200 group-hover:bg-orange-600 group-hover:shadow-orange-100 transition-all duration-300">
-                      추천 제품 바로보기
-                      <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
-                    </div>
-                  </div>
-                  <div className="w-32 h-32 bg-white rounded-[24px] overflow-hidden shadow-xl shadow-orange-100/50 shrink-0 p-3 relative border border-orange-50/50">
-                    <div className="absolute inset-0 bg-linear-to-tr from-orange-50/30 to-transparent pointer-events-none" />
-                    <Image
-                      src={bannerInfo.src}
-                      fill
-                      className="object-contain p-4 transition-transform duration-700 group-hover:scale-110"
-                      alt="Product"
-                    />
-                  </div>
-                </a>
-              );
-            })()}
+                  </a>
+                );
+              })()}
 
             {/* Zone 4: Details & Actions */}
             <div>
@@ -574,11 +683,11 @@ export default function ShopDetailView({
 
           {/* Side Affiliate (PC Only) */}
           {!isMobile && (
-            <div className="col-span-3 space-y-6">
-              <div className="sticky top-40 space-y-6">
+            <div className="col-span-3 -mt-2">
+              <div className="sticky top-24 space-y-6">
                 {sidebarBanner ? (
                   <div className="space-y-3">
-                    <div className="w-[200px] ml-auto flex justify-center overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm p-2">
+                    <div className="w-[200px] ml-auto flex justify-center overflow-hidden rounded-2xl border border-gray-100 shadow-sm">
                       <div
                         dangerouslySetInnerHTML={{
                           __html: sidebarBanner.html_code,
@@ -587,50 +696,7 @@ export default function ShopDetailView({
                       />
                     </div>
                   </div>
-                ) : (
-                  <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
-                    <h4 className="font-black text-gray-900 mb-6 flex items-center justify-between">
-                      함께 구매하면 좋은 장비
-                      <ChevronRight className="w-4 h-4 text-gray-300" />
-                    </h4>
-                    <div className="space-y-5">
-                      {[
-                        {
-                          name: "그랜즈 레미디 (냄새 제거)",
-                          price: "18,000원",
-                          img: "https://images.unsplash.com/photo-1556228578-8c7c2f971c91?q=80&w=200",
-                        },
-                        {
-                          name: "라 스포르티바 초크백",
-                          price: "25,000원",
-                          img: "https://images.unsplash.com/photo-1522163182402-834f871fd851?q=80&w=200",
-                        },
-                      ].map((item, i) => (
-                        <div
-                          key={i}
-                          className="flex gap-4 group cursor-pointer"
-                        >
-                          <div className="w-16 h-16 bg-gray-50 rounded-xl overflow-hidden shrink-0 group-hover:bg-blue-50 transition-colors relative">
-                            <Image
-                              src={item.img}
-                              fill
-                              className="object-contain p-2"
-                              alt={item.name}
-                            />
-                          </div>
-                          <div className="flex flex-col justify-center">
-                            <div className="text-xs font-black text-gray-900 group-hover:text-blue-600 transition-colors">
-                              {item.name}
-                            </div>
-                            <div className="text-[11px] font-bold text-gray-400 mt-1">
-                              {item.price}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                ) : null}
 
                 <div className="bg-gray-50 rounded-3xl p-6 border border-gray-100 text-center">
                   <p className="text-[11px] text-gray-500 font-black mb-3 italic">

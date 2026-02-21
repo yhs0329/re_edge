@@ -1,14 +1,15 @@
 "use client";
 
 import MapViewer from "./MapViewer";
+import { Shop } from "@/lib/constants";
 
 export default function ClientMapWrapper({
   shops,
   onSelectShop,
   selectedShopId,
 }: {
-  shops: any[];
-  onSelectShop: (slug: string | null) => void;
+  shops: Shop[];
+  onSelectShop: (slug: string | null, switchToList?: boolean) => void;
   selectedShopId: string | null;
 }) {
   const NEXT_PUBLIC_NAVER_MAP_CLIENT_ID =
